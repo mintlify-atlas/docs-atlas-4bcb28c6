@@ -1,0 +1,71 @@
+---
+title: global-action-no-action-type
+description: Disallow actionType in global action options.
+---
+
+This rule disallows the `actionType` property in global action options. The `actionType` property is only valid for model actions. Including it in global actions has no effect and may cause confusion.
+
+## Rule Details
+
+This rule checks global action files (files in `api/actions/`) for the `actionType` property in the options export and reports an error if found.
+
+**Severity:** Error
+
+**Auto-fixable:** Yes
+
+## Examples
+
+### Incorrect
+
+```typescript
+// In api/actions/sendEmail.ts
+export const options: ActionOptions = {
+  actionType: "custom"
+};
+
+// With other properties
+export const options: ActionOptions = {
+  actionType: "create",
+  returnType: true
+};
+```
+
+### Correct
+
+```typescript
+// In api/actions/sendEmail.ts
+export const options: ActionOptions = {
+  returnType: true
+};
+
+// No actionType property
+export const options: ActionOptions = {
+  timeoutMS: 50000,
+  returnType: true
+};
+```
+
+## Auto-fixes
+
+The rule automatically removes the `actionType` property:
+
+```typescript
+// Before
+export const options: ActionOptions = {
+  actionType: "create",
+  returnType: true
+};
+
+// After auto-fix
+export const options: ActionOptions = {
+  returnType: true
+};
+```
+
+<Warning>
+This rule only applies to global actions. Model actions (in `api/models/*/actions/`) should use `actionType` to specify the action type.
+</Warning>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents invalid configuration that could cause confusion or unexpected behavior.

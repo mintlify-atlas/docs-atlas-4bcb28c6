@@ -1,0 +1,207 @@
+---
+title: 'Utilities'
+description: 'Utility functions for the gadget-ui library'
+---
+
+## Overview
+
+The gadget-ui library exports utility functions to help with common tasks. These utilities are designed to work seamlessly with the component library.
+
+## cn()
+
+The `cn()` utility function merges and deduplicates Tailwind CSS classes. It combines `clsx` for conditional class handling with `tailwind-merge` for intelligent class merging.
+
+### Import
+
+```tsx
+import { cn } from "@aurelienbbn/gadget-ui/components";
+```
+
+### Usage
+
+The function accepts any number of class values and intelligently merges them:
+
+```tsx
+cn("px-4 py-2", "bg-blue-500") 
+// Returns: "px-4 py-2 bg-blue-500"
+```
+
+### Conditional Classes
+
+Use objects for conditional classes:
+
+```tsx
+cn("base-class", {
+  "active-class": isActive,
+  "disabled-class": isDisabled
+})
+// Returns: "base-class active-class" (if isActive is true)
+```
+
+### Class Deduplication
+
+Tailwind-merge handles conflicting utility classes:
+
+```tsx
+cn("px-2 px-4")
+// Returns: "px-4" (later value wins)
+
+cn("text-red-500", "text-blue-500")
+// Returns: "text-blue-500"
+```
+
+### Arrays and Mixed Values
+
+Supports arrays and mixed input types:
+
+```tsx
+cn(["class1", "class2"], "class3", undefined, null, false)
+// Returns: "class1 class2 class3"
+```
+
+### Type Signature
+
+```typescript
+function cn(...inputs: ClassValue[]): string
+```
+
+The `ClassValue` type (from `clsx`) accepts:
+- Strings: `"class-name"`
+- Objects: `{ "class-name": boolean }`
+- Arrays: `["class1", "class2"]`
+- Falsy values: `undefined`, `null`, `false` (ignored)
+
+## Examples
+
+### Basic Merging
+
+```tsx
+const buttonClasses = cn(
+  "px-4 py-2 rounded",
+  "bg-blue-500 text-white",
+  "hover:bg-blue-600"
+);
+// "px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+```
+
+### With Component Props
+
+```tsx
+function MyButton({ className, variant }) {
+  return (
+    <button 
+      className={cn(
+        "base-button-styles",
+        variant === "primary" && "bg-blue-500",
+        variant === "secondary" && "bg-gray-500",
+        className
+      )}
+    >
+      Click me
+    </button>
+  );
+}
+```
+
+### Responsive Classes
+
+```tsx
+cn(
+  "text-sm md:text-base",
+  "px-2 md:px-4",
+  "hidden md:block"
+)
+// All responsive variants are preserved
+```
+
+### With CVA Variants
+
+The `cn()` function works seamlessly with class-variance-authority (CVA):
+
+```tsx
+import { cva } from "class-variance-authority";
+import { cn } from "@aurelienbbn/gadget-ui/components";
+
+const buttonVariants = cva("base-styles", {
+  variants: {
+    variant: {
+      primary: "bg-blue-500",
+      secondary: "bg-gray-500"
+    }
+  }
+});
+
+function Button({ variant, className }) {
+  return (
+    <button className={cn(buttonVariants({ variant }), className)}>
+      Click me
+    </button>
+  );
+}
+```
+
+### Override Component Styles
+
+```tsx
+import { Button } from "@aurelienbbn/gadget-ui/components";
+
+// The Button component internally uses cn() to merge custom classes
+<Button className="w-full mt-4">
+  Full Width Button
+</Button>
+```
+
+## Why cn()?
+
+The `cn()` utility solves two problems:
+
+1. **Conditional classes**: Using `clsx` makes it easy to apply classes conditionally without string concatenation.
+
+2. **Tailwind conflicts**: Using `tailwind-merge` ensures that conflicting Tailwind utilities are properly resolved (the last one wins).
+
+### Without cn():
+
+```tsx
+// Verbose and error-prone
+const classes = [
+  "base-class",
+  isActive ? "active-class" : "",
+  isDisabled ? "disabled-class" : "",
+  className
+].filter(Boolean).join(" ");
+
+// Conflicting classes not resolved
+"px-2 px-4" // Both classes applied!
+```
+
+### With cn():
+
+```tsx
+// Clean and correct
+const classes = cn(
+  "base-class",
+  isActive && "active-class",
+  isDisabled && "disabled-class",
+  className
+);
+
+cn("px-2 px-4") // Returns "px-4" (conflict resolved)
+```
+
+## Implementation
+
+Location: `packages/gadget-ui/src/lib/cn.ts:4`
+
+```typescript
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+## Dependencies
+
+- [clsx](https://github.com/lukeed/clsx) - Tiny utility for constructing className strings conditionally
+- [tailwind-merge](https://github.com/dcastil/tailwind-merge) - Merge Tailwind CSS classes without style conflicts

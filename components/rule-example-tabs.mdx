@@ -1,0 +1,177 @@
+---
+title: 'RuleExampleTabs'
+description: 'Tabbed component for displaying valid and invalid code examples for ESLint rules'
+---
+
+## Overview
+
+The `RuleExampleTabs` component provides a tabbed interface for showing valid and invalid code examples for ESLint rules. Features syntax highlighting, error messages, and optional descriptions for each example.
+
+<Note>
+This is a client component (`"use client"`) and uses React state for tab management.
+</Note>
+
+## Import
+
+```tsx
+import { RuleExampleTabs, type CodeExample } from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<RuleExampleTabs
+  valid={[
+    { code: "const x = 1;\nconsole.log(x);" }
+  ]}
+  invalid={[
+    { 
+      code: "const x = 1;", 
+      errors: ["Variable 'x' is assigned but never used"]
+    }
+  ]}
+  language="typescript"
+/>
+```
+
+## Props
+
+<ParamField path="valid" type="CodeExample[]" required>
+  Array of valid code examples.
+</ParamField>
+
+<ParamField path="invalid" type="CodeExample[]" required>
+  Array of invalid code examples.
+</ParamField>
+
+<ParamField path="language" type="string" default="typescript">
+  The programming language for syntax highlighting.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+The RuleExampleTabs component extends `HTMLAttributes<HTMLDivElement>`, so all standard div attributes are supported.
+
+## CodeExample Type
+
+Each example in the `valid` or `invalid` arrays has the following structure:
+
+<ParamField path="code" type="string" required>
+  The code to display.
+</ParamField>
+
+<ParamField path="description" type="string">
+  Optional description of the example, displayed above the code.
+</ParamField>
+
+<ParamField path="errors" type="string[]">
+  Array of error messages to display below the code (typically used for invalid examples).
+</ParamField>
+
+## Tab Indicators
+
+The component displays two tabs with distinct visual indicators:
+
+- **Valid tab**: Green checkmark icon (✓) with green accent when active
+- **Invalid tab**: Red cross icon (✗) with red accent when active
+
+Each active tab shows a colored indicator bar at the bottom.
+
+## Examples
+
+### Rule with Multiple Examples
+
+```tsx
+<RuleExampleTabs
+  valid={[
+    {
+      code: "const name = 'Alice';\nconsole.log(name);",
+      description: "Variable is used"
+    },
+    {
+      code: "function greet() {\n  return 'Hello';\n}\ngreet();",
+      description: "Function is called"
+    }
+  ]}
+  invalid={[
+    {
+      code: "const unused = 'value';",
+      description: "Variable is never used",
+      errors: ["Variable 'unused' is assigned but never used"]
+    },
+    {
+      code: "function unusedFunc() {\n  return true;\n}",
+      description: "Function is defined but never called",
+      errors: ["Function 'unusedFunc' is defined but never used"]
+    }
+  ]}
+  language="typescript"
+/>
+```
+
+### JavaScript Examples
+
+```tsx
+<RuleExampleTabs
+  valid={[
+    { code: "const arr = [1, 2, 3];\narr.forEach(n => console.log(n));" }
+  ]}
+  invalid={[
+    { 
+      code: "const arr = [1, 2, 3];",
+      errors: ["Variable 'arr' is assigned but never used"]
+    }
+  ]}
+  language="javascript"
+/>
+```
+
+### With Custom Styling
+
+```tsx
+<RuleExampleTabs
+  valid={[{ code: "// Valid code" }]}
+  invalid={[{ code: "// Invalid code" }]}
+  className="my-4"
+/>
+```
+
+## Design Details
+
+- Tab buttons use 12px (xs) font with medium weight
+- Active tab has colored text and bottom indicator
+- Inactive tabs have muted text with hover effect
+- Error messages displayed in destructive color with monospace font
+- Examples separated by subtle dividers
+- Code blocks use the CodeBlock component with syntax highlighting
+- Tab list has raised surface background
+
+## Accessibility
+
+- Uses proper ARIA attributes (`role="tab"`, `role="tablist"`, `role="tabpanel"`, `aria-selected`)
+- Focus visible outline on tab buttons
+- Keyboard navigation support (inherited from button element)
+
+## Error Display
+
+Invalid examples can include error messages that appear below the code block:
+
+```tsx
+{
+  code: "const x = 1;",
+  errors: [
+    "Variable 'x' is assigned but never used",
+    "Expected 'const' to be used for immutable values"
+  ]
+}
+```
+
+Errors are displayed in a destructive-colored strip with an arrow indicator (↳) before each message.
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/rule-example-tabs.tsx:78`
+
+The component uses CodeBlock internally for syntax highlighting and manages tab state with `useState`.

@@ -1,0 +1,145 @@
+---
+title: 'Badge'
+description: 'Small labeled badge component with color variants'
+---
+
+## Overview
+
+The `Badge` component displays small, pill-shaped labels with semantic color variants. Useful for tags, status indicators, and metadata labels.
+
+## Import
+
+```tsx
+import { Badge } from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<Badge>Default</Badge>
+```
+
+## Variants
+
+The Badge component supports five color variants:
+
+<Tabs>
+  <Tab title="Default">
+    ```tsx
+    <Badge variant="default">
+      Default
+    </Badge>
+    ```
+    
+    Neutral gray variant for general-purpose labels. This is the default variant.
+  </Tab>
+  
+  <Tab title="Accent">
+    ```tsx
+    <Badge variant="accent">
+      Accent
+    </Badge>
+    ```
+    
+    Purple accent color for highlighted information.
+  </Tab>
+  
+  <Tab title="Success">
+    ```tsx
+    <Badge variant="success">
+      Success
+    </Badge>
+    ```
+    
+    Green variant for positive states or success indicators.
+  </Tab>
+  
+  <Tab title="Destructive">
+    ```tsx
+    <Badge variant="destructive">
+      Error
+    </Badge>
+    ```
+    
+    Red variant for errors or destructive actions.
+  </Tab>
+  
+  <Tab title="Warning">
+    ```tsx
+    <Badge variant="warning">
+      Warning
+    </Badge>
+    ```
+    
+    Yellow/orange variant for warnings or caution states.
+  </Tab>
+</Tabs>
+
+## Sizes
+
+Two size options are available:
+
+```tsx
+<Badge size="sm">Small</Badge>
+<Badge size="md">Medium</Badge>
+```
+
+- `sm` - Padding: 8px/2px (2/0.5), Font: 10px, Tight leading
+- `md` - Padding: 10px/2px (2.5/0.5), Font: 12px (xs) - Default
+
+## Props
+
+<ParamField path="variant" type="'default' | 'accent' | 'success' | 'destructive' | 'warning'" default="default">
+  The color variant of the badge.
+</ParamField>
+
+<ParamField path="size" type="'sm' | 'md'" default="md">
+  The size of the badge.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+The Badge component extends `HTMLAttributes<HTMLSpanElement>`, so all standard span attributes are supported.
+
+## Design Details
+
+- Rounded-full shape (pill-shaped)
+- Border with matching color variant
+- Smooth color transitions
+- Font: sans-serif family, medium weight
+- Inline-flex layout for proper alignment
+
+## Examples
+
+### Status Indicators
+
+```tsx
+<div className="flex gap-2">
+  <Badge variant="success">Active</Badge>
+  <Badge variant="warning">Pending</Badge>
+  <Badge variant="destructive">Failed</Badge>
+</div>
+```
+
+### With Icons
+
+```tsx
+<Badge variant="accent">
+  <span aria-hidden="true">★</span>
+  Featured
+</Badge>
+```
+
+### Small Size for Compact UI
+
+```tsx
+<Badge size="sm" variant="default">v2.0</Badge>
+```
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/badge.tsx:28`
+
+The Badge is a simple functional component that renders a `<span>` element.

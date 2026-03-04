@@ -1,0 +1,64 @@
+---
+title: action-require-run-with-on-success
+description: Require a run export when onSuccess is exported in Gadget actions.
+---
+
+This rule requires that when an action exports `onSuccess`, it must also export `run`. Gadget will error at runtime if an action has `onSuccess` but no `run` function.
+
+## Rule Details
+
+This rule checks if the action file exports `onSuccess` and reports an error if there is no corresponding `run` export.
+
+**Severity:** Error
+
+**Auto-fixable:** No
+
+## Examples
+
+### Incorrect
+
+```typescript
+// onSuccess without run
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  await doSomething(record);
+};
+
+// With options but no run
+export const options: ActionOptions = { returnType: true };
+export const onSuccess: ActionOnSuccess = async () => {};
+```
+
+### Correct
+
+```typescript
+// Both run and onSuccess present
+export const run: ActionRun = async ({ params }) => {
+  // do work
+};
+
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  await doSomething(record);
+};
+
+// Only run (no onSuccess needed)
+export const run: ActionRun = async ({ params }) => {
+  // do work
+};
+
+// Only options (neither run nor onSuccess)
+export const options: ActionOptions = {
+  returnType: true
+};
+```
+
+## Why This Matters
+
+The `onSuccess` function is called after the `run` function completes successfully. Without a `run` function, there is nothing for `onSuccess` to run after, and Gadget will throw a runtime error.
+
+<Warning>
+Gadget will error at runtime if you export `onSuccess` without `run`. This rule catches the problem at development time.
+</Warning>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents a common configuration error that causes runtime failures.

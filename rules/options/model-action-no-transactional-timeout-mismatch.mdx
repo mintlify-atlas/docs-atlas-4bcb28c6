@@ -1,0 +1,102 @@
+---
+title: model-action-no-transactional-timeout-mismatch
+description: Disallow timeoutMS above 5000ms on model actions without explicitly setting transactional to false.
+---
+
+This rule prevents a common misconfiguration where `timeoutMS` is set above 5000ms on a model action that is transactional. Transactional model actions are killed after 5 seconds regardless of the `timeoutMS` setting, so setting a higher timeout has no effect and may mislead developers.
+
+## Rule Details
+
+Model actions are transactional by default. Transactional actions have a hard 5-second (5000ms) timeout limit. This rule reports an error when:
+
+- `timeoutMS` is set above 5000ms, AND
+- `transactional` is not explicitly set to `false`
+
+**Severity:** Error
+
+**Auto-fixable:** No
+
+## Examples
+
+### Incorrect
+
+```typescript
+// timeoutMS above 5000 without transactional: false
+export const options: ActionOptions = {
+  timeoutMS: 6000
+};
+
+// Large timeout without transactional: false
+export const options: ActionOptions = {
+  timeoutMS: 900000
+};
+
+// Explicit transactional: true with high timeout
+export const options: ActionOptions = {
+  timeoutMS: 30000,
+  transactional: true
+};
+
+// Just above the boundary
+export const options: ActionOptions = {
+  timeoutMS: 5001
+};
+```
+
+### Correct
+
+```typescript
+// timeoutMS under 5000 - transactional is fine
+export const options: ActionOptions = {
+  timeoutMS: 3000
+};
+
+// timeoutMS above 5000 with transactional: false
+export const options: ActionOptions = {
+  timeoutMS: 30000,
+  transactional: false
+};
+
+// Exactly at the 5000 boundary
+export const options: ActionOptions = {
+  timeoutMS: 5000
+};
+
+// No timeoutMS property
+export const options: ActionOptions = {
+  transactional: false
+};
+```
+
+## How to Fix
+
+You have two options to fix this error:
+
+1. **Set `transactional: false`** if you need the longer timeout:
+
+```typescript
+export const options: ActionOptions = {
+  timeoutMS: 30000,
+  transactional: false
+};
+```
+
+2. **Reduce `timeoutMS` to 5000 or below** if you want to keep the action transactional:
+
+```typescript
+export const options: ActionOptions = {
+  timeoutMS: 5000
+};
+```
+
+<Warning>
+Setting `transactional: false` means the action will not automatically be rolled back if an error occurs. Make sure this is appropriate for your use case.
+</Warning>
+
+<Note>
+This rule only applies to model actions. Global actions are never transactional and do not have this limitation.
+</Note>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents a common misconfiguration that can lead to unexpected timeouts and confusion.

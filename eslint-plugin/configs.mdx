@@ -1,0 +1,198 @@
+---
+title: Configs
+description: Compare recommended vs strict preset configs and understand severity levels for each rule
+---
+
+The plugin provides two preset configurations: `recommended` and `strict`. Both include all 16 rules but differ in severity levels.
+
+## Recommended config
+
+Use `recommended` for most projects. It balances strictness with pragmatism:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [gadget.configs.recommended];
+```
+
+### Severity breakdown
+
+**Error-level rules (4):**
+
+These catch critical validation issues that break Gadget runtime:
+
+- `action-no-invalid-options` - Options must be JSON-serializable literals
+- `action-no-invalid-params` - Params must use supported types and properties
+- `action-no-invalid-timeout-ms` - Timeout cannot exceed 900000ms (15 minutes)
+
+**Warning-level rules (12):**
+
+These enforce best practices and catch subtle runtime issues:
+
+- `action-no-await-handle-result-in-action` - Prevents transaction timeouts and billing surprises
+- `action-no-empty-on-success` - Empty exports can be removed
+- `action-no-enqueue-max-concurrency-exceeded` - Max concurrency is 100
+- `action-no-implicit-enqueue-retries` - Gadget defaults to 6 retries, require explicit value
+- `action-no-return-value-in-on-success` - Return values are ignored by Gadget
+- `action-require-action-run-type` - Type annotations improve DX
+- `action-require-explicit-return-type` - Return type defaults differ between model and global actions
+- `action-require-run-with-on-success` - onSuccess without run is invalid
+- `action-require-timeout-ms-comment` - Improves readability of timeout values
+- `global-action-no-action-type` - actionType is not valid in global actions
+- `model-action-invalid-action-type` - Must be create, update, delete, or custom
+- `model-action-no-invalid-trigger` - Model actions cannot use scheduler triggers
+- `model-action-no-transactional-timeout-mismatch` - Transactional actions timeout at 5s regardless of timeoutMS
+
+## Strict config
+
+Use `strict` for CI, pre-commit hooks, or projects with zero-tolerance for warnings:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [gadget.configs.strict];
+```
+
+### Severity breakdown
+
+**All rules at error level (16):**
+
+Every rule violation fails the lint run. This is ideal for preventing any non-compliant code from reaching production.
+
+## Side-by-side comparison
+
+| Rule                                              | Recommended | Strict  | Auto-fix |
+| ------------------------------------------------- | ----------- | ------- | -------- |
+| `action-no-await-handle-result-in-action`         | warn        | error   | no       |
+| `action-no-empty-on-success`                      | warn        | error   | yes      |
+| `action-no-enqueue-max-concurrency-exceeded`      | warn        | error   | no       |
+| `action-no-implicit-enqueue-retries`              | warn        | error   | no       |
+| `action-no-invalid-options`                       | error       | error   | yes      |
+| `action-no-invalid-params`                        | error       | error   | no       |
+| `action-no-invalid-timeout-ms`                    | error       | error   | yes      |
+| `action-no-return-value-in-on-success`            | warn        | error   | yes      |
+| `action-require-action-run-type`                  | warn        | error   | yes      |
+| `action-require-explicit-return-type`             | warn        | error   | yes      |
+| `action-require-run-with-on-success`              | warn        | error   | no       |
+| `action-require-timeout-ms-comment`               | warn        | error   | yes      |
+| `global-action-no-action-type`                    | warn        | error   | yes      |
+| `model-action-invalid-action-type`                | warn        | error   | no       |
+| `model-action-no-invalid-trigger`                 | warn        | error   | yes      |
+| `model-action-no-transactional-timeout-mismatch`  | warn        | error   | no       |
+
+<Tip>
+  Rules marked with auto-fix support can be corrected by running `eslint --fix`.
+</Tip>
+
+## Config source code
+
+Both configs are simple rule maps. Here are the actual implementations:
+
+<CodeGroup>
+  ```ts recommended.ts
+  import type { Linter } from "eslint";
+
+  export function recommended(plugin: Record<string, unknown>): Linter.Config {
+    return {
+      plugins: { gadget: plugin },
+      rules: {
+        "gadget/action-no-await-handle-result-in-action": "warn",
+        "gadget/action-no-empty-on-success": "warn",
+        "gadget/action-no-enqueue-max-concurrency-exceeded": "warn",
+        "gadget/action-no-implicit-enqueue-retries": "warn",
+        "gadget/action-no-invalid-options": "error",
+        "gadget/action-no-invalid-params": "error",
+        "gadget/action-no-invalid-timeout-ms": "error",
+        "gadget/action-no-return-value-in-on-success": "warn",
+        "gadget/action-require-action-run-type": "warn",
+        "gadget/action-require-explicit-return-type": "warn",
+        "gadget/action-require-run-with-on-success": "warn",
+        "gadget/action-require-timeout-ms-comment": "warn",
+        "gadget/global-action-no-action-type": "warn",
+        "gadget/model-action-invalid-action-type": "warn",
+        "gadget/model-action-no-invalid-trigger": "warn",
+        "gadget/model-action-no-transactional-timeout-mismatch": "warn",
+      },
+    };
+  }
+  ```
+
+  ```ts strict.ts
+  import type { Linter } from "eslint";
+
+  export function strict(plugin: Record<string, unknown>): Linter.Config {
+    return {
+      plugins: { gadget: plugin },
+      rules: {
+        "gadget/action-no-await-handle-result-in-action": "error",
+        "gadget/action-no-empty-on-success": "error",
+        "gadget/action-no-enqueue-max-concurrency-exceeded": "error",
+        "gadget/action-no-implicit-enqueue-retries": "error",
+        "gadget/action-no-invalid-options": "error",
+        "gadget/action-no-invalid-params": "error",
+        "gadget/action-no-invalid-timeout-ms": "error",
+        "gadget/action-no-return-value-in-on-success": "error",
+        "gadget/action-require-action-run-type": "error",
+        "gadget/action-require-explicit-return-type": "error",
+        "gadget/action-require-run-with-on-success": "error",
+        "gadget/action-require-timeout-ms-comment": "error",
+        "gadget/global-action-no-action-type": "error",
+        "gadget/model-action-invalid-action-type": "error",
+        "gadget/model-action-no-invalid-trigger": "error",
+        "gadget/model-action-no-transactional-timeout-mismatch": "error",
+      },
+    };
+  }
+  ```
+</CodeGroup>
+
+## Choosing a config
+
+<AccordionGroup>
+  <Accordion title="When to use recommended">
+    - Local development where warnings are acceptable
+    - Teams adopting the plugin incrementally
+    - Projects with legacy code that cannot be fixed immediately
+    - Editor integration (warnings appear inline but do not block saves)
+  </Accordion>
+
+  <Accordion title="When to use strict">
+    - CI pipelines (fail builds on any violation)
+    - Pre-commit hooks (prevent non-compliant code from being committed)
+    - New projects starting with clean slate
+    - Production deployments where code quality is critical
+  </Accordion>
+</AccordionGroup>
+
+## Custom severity mix
+
+You can create a custom config by starting with a preset and overriding specific rules:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  gadget.configs.recommended,
+  {
+    rules: {
+      // Elevate runtime issues to errors
+      "gadget/action-no-await-handle-result-in-action": "error",
+      "gadget/action-no-return-value-in-on-success": "error",
+      
+      // Relax comment requirements
+      "gadget/action-require-timeout-ms-comment": "off",
+    },
+  },
+];
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/eslint-plugin/configuration">
+    Learn how to override rules and ignore files
+  </Card>
+  <Card title="Rules" icon="book" href="https://github.com/aurelienbobenrieth/gadget/tree/main/packages/eslint-plugin-gadget#rules">
+    Read detailed rule documentation
+  </Card>
+</CardGroup>

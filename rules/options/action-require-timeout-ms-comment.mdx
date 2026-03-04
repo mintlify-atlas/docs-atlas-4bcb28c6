@@ -1,0 +1,96 @@
+---
+title: action-require-timeout-ms-comment
+description: Require a trailing inline comment describing the duration on the timeoutMS property in Gadget action options.
+---
+
+This rule requires that the `timeoutMS` property in action options has a trailing comment that describes the duration in human-readable form (seconds or minutes). This improves code readability by making timeout durations immediately clear without mental math.
+
+## Rule Details
+
+This rule checks that any `timeoutMS` property has a trailing inline comment formatted as `// N seconds` or `// N minutes`. The rule automatically generates the correct comment based on the millisecond value.
+
+**Severity:** Warning
+
+**Auto-fixable:** Yes
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Missing comment
+export const options: ActionOptions = { timeoutMS: 50000 };
+
+// Non-duration comment
+export const options: ActionOptions = {
+  timeoutMS: 120000 // timeout
+};
+
+// TODO comment instead of duration
+export const options: ActionOptions = {
+  timeoutMS: 50000 // TODO
+};
+
+// Block comment without duration
+export const options: ActionOptions = {
+  timeoutMS: 60000 /* config */
+};
+```
+
+### Correct
+
+```typescript
+// Seconds comment
+export const options: ActionOptions = {
+  timeoutMS: 50000 // 50 seconds
+};
+
+// Minutes comment
+export const options: ActionOptions = {
+  timeoutMS: 120000 // 2 minutes
+};
+
+// With trailing comma
+export const options: ActionOptions = {
+  timeoutMS: 50000, // 50 seconds
+};
+
+// No timeoutMS property
+export const options: ActionOptions = {
+  returnType: true
+};
+```
+
+## Auto-fixes
+
+The rule automatically adds or replaces comments with the correct duration:
+
+```typescript
+// Before
+export const options: ActionOptions = { timeoutMS: 50000 };
+
+// After auto-fix
+export const options: ActionOptions = {
+  timeoutMS: 50000 // 50 seconds
+};
+```
+
+```typescript
+// Before
+export const options: ActionOptions = {
+  timeoutMS: 120000 // timeout
+};
+
+// After auto-fix
+export const options: ActionOptions = {
+  timeoutMS: 120000 // 2 minutes
+};
+```
+
+<Tip>
+The rule intelligently handles trailing commas and preserves formatting when adding comments.
+</Tip>
+
+## When to Use
+
+This rule is included in the `strict` config. While not critical, it significantly improves code readability by making timeout durations immediately apparent without needing to convert milliseconds mentally.

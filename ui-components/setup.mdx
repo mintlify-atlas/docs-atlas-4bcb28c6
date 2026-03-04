@@ -1,0 +1,339 @@
+---
+title: Setup
+description: Configure Tailwind CSS preset, import global styles, and understand content path requirements
+---
+
+Setting up gadget-ui involves three steps: configure the Tailwind preset, import global styles, and ensure content paths are correct.
+
+## Tailwind configuration
+
+The gadget-ui preset extends Tailwind with design tokens mapped to CSS custom properties.
+
+### Add the preset
+
+Import and apply `gadgetPreset` in your Tailwind config:
+
+```js tailwind.config.js
+import { gadgetPreset } from "@aurelienbbn/gadget-ui/tailwind-preset";
+
+export default {
+  presets: [gadgetPreset],
+  content: [
+    "./src/**/*.{ts,tsx,js,jsx}",
+    "./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js",
+  ],
+};
+```
+
+<Warning>
+  The content array must include `./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js`. Without this, Tailwind will not detect component classes and styles will be missing.
+</Warning>
+
+### What the preset provides
+
+The preset extends Tailwind's theme with:
+
+- **Colors:** Semantic tokens like `accent`, `surface`, `foreground`, `destructive`
+- **Typography:** `font-sans` (Inter) and `font-mono` (Inconsolata)
+- **Border radius:** `radius`, `radius-sm`, `radius-lg`, `radius-full`
+- **Box shadows:** `shadow-button`, `shadow-card`, `shadow-raised`
+
+All values reference CSS custom properties defined in `globals.css`, so they respond to theme changes automatically.
+
+### Preset source code
+
+Here is the actual preset implementation:
+
+```ts tailwind-preset.ts
+import type { Config } from "tailwindcss";
+
+const cssVar = (name: string) => `var(--${name})`;
+
+const colors = {
+  accent: {
+    deep: cssVar("accent-deep"),
+    DEFAULT: cssVar("accent"),
+    foreground: cssVar("accent-foreground"),
+    muted: cssVar("accent-muted"),
+  },
+  background: cssVar("background"),
+  border: cssVar("border"),
+  "border-subtle": cssVar("border-subtle"),
+  destructive: {
+    DEFAULT: cssVar("destructive"),
+    muted: cssVar("destructive-muted"),
+  },
+  foreground: cssVar("foreground"),
+  info: cssVar("info"),
+  "muted-foreground": cssVar("muted-foreground"),
+  "subtle-foreground": cssVar("subtle-foreground"),
+  success: {
+    DEFAULT: cssVar("success"),
+    muted: cssVar("success-muted"),
+  },
+  surface: cssVar("surface"),
+  "surface-overlay": cssVar("surface-overlay"),
+  "surface-raised": cssVar("surface-raised"),
+  warning: {
+    DEFAULT: cssVar("warning"),
+    muted: cssVar("warning-muted"),
+  },
+};
+
+const fontFamily = {
+  mono: ["Inconsolata", "Menlo", "Monaco", "Consolas", "monospace"],
+  sans: ["Inter", "Helvetica", "Arial", "sans-serif"],
+};
+
+const borderRadius = {
+  DEFAULT: cssVar("radius"),
+  full: cssVar("radius-full"),
+  lg: cssVar("radius-lg"),
+  sm: cssVar("radius-sm"),
+};
+
+const boxShadow = {
+  button: cssVar("shadow-button"),
+  "button-accent": cssVar("shadow-button-accent"),
+  card: cssVar("shadow-card"),
+  raised: cssVar("shadow-raised"),
+};
+
+export const gadgetPreset: Partial<Config> = {
+  theme: {
+    extend: {
+      borderRadius,
+      boxShadow,
+      colors,
+      fontFamily,
+    },
+  },
+};
+```
+
+### Using design tokens
+
+Once configured, use tokens in your Tailwind classes:
+
+```tsx
+<div className="bg-surface border border-border rounded-lg shadow-card">
+  <h1 className="font-sans text-foreground">Title</h1>
+  <p className="font-mono text-muted-foreground">Code snippet</p>
+  <button className="bg-accent text-accent-foreground rounded shadow-button-accent">
+    Click me
+  </button>
+</div>
+```
+
+## Global styles
+
+Import the global CSS file to load fonts and define CSS variables.
+
+### Import in your main CSS
+
+Add this to your root CSS file:
+
+```css styles/globals.css
+@import "@aurelienbbn/gadget-ui/styles";
+
+/* Your custom styles below */
+```
+
+This imports:
+
+- `@fontsource-variable/inter` (variable font)
+- `@fontsource/inconsolata` (400 and 700 weights)
+- CSS custom properties for colors, shadows, radius, and fonts
+- Dark and light theme definitions
+
+### What gets loaded
+
+Here is an excerpt from the global styles:
+
+```css globals.css (excerpt)
+@import "@fontsource-variable/inter";
+@import "@fontsource/inconsolata/400.css";
+@import "@fontsource/inconsolata/700.css";
+
+:root {
+  --font-sans: "Inter Variable", "Inter", Helvetica, Arial, sans-serif;
+  --font-mono: "Inconsolata", Menlo, Monaco, Consolas, monospace;
+
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-lg: 10px;
+  --radius-full: 9999px;
+
+  --accent: #4242fc;
+  --accent-deep: #2828a0;
+  --accent-foreground: #ffffff;
+  --info: #4242fc;
+}
+
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
+  --background: #0a0a0f;
+  --surface: #111118;
+  --surface-raised: #17171f;
+  --foreground: #f2f2f5;
+  --muted-foreground: #8888a0;
+  --border: #2a2a38;
+  /* ...more variables */
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --background: #f8f8f9;
+  --surface: #ffffff;
+  --foreground: #1f1f1f;
+  /* ...more variables */
+}
+```
+
+## Content paths
+
+Tailwind scans your source files to detect which classes to include. You must specify both your project files and the gadget-ui dist folder.
+
+### Correct content configuration
+
+```js tailwind.config.js
+export default {
+  presets: [gadgetPreset],
+  content: [
+    "./src/**/*.{ts,tsx,js,jsx}",           // Your project files
+    "./pages/**/*.{ts,tsx,js,jsx}",         // If using Next.js pages
+    "./app/**/*.{ts,tsx,js,jsx}",           // If using Next.js app dir
+    "./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js", // gadget-ui components
+  ],
+};
+```
+
+<Tip>
+  If styles are missing in production, check that your content paths are correct. The gadget-ui dist folder must be included.
+</Tip>
+
+## Framework-specific setup
+
+<Tabs>
+  <Tab title="Next.js">
+    ```js tailwind.config.js
+    import { gadgetPreset } from "@aurelienbbn/gadget-ui/tailwind-preset";
+
+    export default {
+      presets: [gadgetPreset],
+      content: [
+        "./app/**/*.{ts,tsx}",
+        "./components/**/*.{ts,tsx}",
+        "./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js",
+      ],
+    };
+    ```
+
+    Import styles in `app/globals.css`:
+
+    ```css app/globals.css
+    @import "@aurelienbbn/gadget-ui/styles";
+    ```
+  </Tab>
+
+  <Tab title="Vite">
+    ```js tailwind.config.js
+    import { gadgetPreset } from "@aurelienbbn/gadget-ui/tailwind-preset";
+
+    export default {
+      presets: [gadgetPreset],
+      content: [
+        "./src/**/*.{ts,tsx}",
+        "./index.html",
+        "./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js",
+      ],
+    };
+    ```
+
+    Import styles in `src/main.tsx`:
+
+    ```tsx src/main.tsx
+    import "@aurelienbbn/gadget-ui/styles";
+    import "./index.css";
+    ```
+  </Tab>
+
+  <Tab title="Astro">
+    ```js tailwind.config.js
+    import { gadgetPreset } from "@aurelienbbn/gadget-ui/tailwind-preset";
+
+    export default {
+      presets: [gadgetPreset],
+      content: [
+        "./src/**/*.{astro,html,ts,tsx}",
+        "./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js",
+      ],
+    };
+    ```
+
+    Import styles in your layout:
+
+    ```astro src/layouts/Layout.astro
+    ---
+    import "@aurelienbbn/gadget-ui/styles";
+    ---
+    ```
+  </Tab>
+</Tabs>
+
+## Verify setup
+
+Create a test component to verify the setup:
+
+```tsx src/Test.tsx
+import { Button, Badge, Card, CardHeader, CardTitle, CardContent } from "@aurelienbbn/gadget-ui/components";
+
+export default function Test() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Setup Verification</CardTitle>
+      </CardHeader>
+      <CardContent className="flex gap-2">
+        <Badge variant="accent">Accent</Badge>
+        <Button variant="primary">Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+If the component renders with correct styles, your setup is complete.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Missing styles in production">
+    Check that `./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js` is in your Tailwind content array. Without this, Tailwind cannot detect component classes.
+  </Accordion>
+
+  <Accordion title="Fonts not loading">
+    Verify that `@import "@aurelienbbn/gadget-ui/styles";` is in your main CSS file. The import loads Inter and Inconsolata via @fontsource.
+  </Accordion>
+
+  <Accordion title="CSS variables not defined">
+    Make sure the global styles import is placed before Tailwind directives (`@tailwind base`, etc.). The variables must be defined before Tailwind processes them.
+  </Accordion>
+
+  <Accordion title="TypeScript errors on imports">
+    If you see module resolution errors, check that your tsconfig includes `"moduleResolution": "bundler"` or `"node16"`. The package uses modern exports.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Theming" icon="palette" href="/ui-components/theming">
+    Explore design tokens, color system, and theme switching
+  </Card>
+  <Card title="Components" icon="cube" href="https://github.com/aurelienbobenrieth/gadget/tree/main/packages/gadget-ui#components">
+    Browse available components and variants
+  </Card>
+</CardGroup>

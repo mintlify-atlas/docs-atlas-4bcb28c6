@@ -1,0 +1,149 @@
+---
+title: 'RuleCard'
+description: 'Card component for displaying ESLint rule summaries with metadata'
+---
+
+## Overview
+
+The `RuleCard` component displays a summary of an ESLint rule with its severity, scope, fixability status, and description. Designed for rule listing pages with hover effects and clickable navigation.
+
+## Import
+
+```tsx
+import { RuleCard } from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<RuleCard
+  name="no-unused-vars"
+  description="Disallow unused variables"
+  severity="error"
+  scope="model-action"
+  href="/rules/best-practices/no-unused-vars"
+/>
+```
+
+## Props
+
+<ParamField path="name" type="string" required>
+  The name of the ESLint rule (displayed in monospace font).
+</ParamField>
+
+<ParamField path="description" type="string" required>
+  A brief description of what the rule does.
+</ParamField>
+
+<ParamField path="severity" type="Severity" required>
+  The severity level of the rule: `"error"`, `"warn"`, `"suggestion"`, or `"off"`.
+</ParamField>
+
+<ParamField path="scope" type="RuleScope" required>
+  The scope where the rule applies: `"action"`, `"cross-cutting"`, `"global-action"`, `"model-action"`, or `"route"`.
+</ParamField>
+
+<ParamField path="fixable" type="boolean">
+  Whether the rule has an automatic fixer. Displays a green "fixable" badge when true.
+</ParamField>
+
+<ParamField path="href" type="string" required>
+  The URL to navigate to when the card is clicked.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+The RuleCard component extends `HTMLAttributes<HTMLAnchorElement>`, so all standard anchor attributes are supported.
+
+## Rule Scopes
+
+The `RuleScope` type defines where a rule applies:
+
+- `action` - General action code
+- `cross-cutting` - Multiple contexts
+- `global-action` - Global action functions
+- `model-action` - Model-specific actions
+- `route` - Route handlers
+
+## Design Details
+
+- Renders as an anchor (`<a>`) element for navigation
+- Card background and border change on hover
+- Smooth transitions (150ms duration)
+- Three badges displayed: severity, scope, and optionally fixable
+- Rule name in monospace font (12px/xs)
+- Description in muted color with relaxed leading
+- No underline on the link (uses `no-underline` class)
+
+## Examples
+
+### Error Rule with Fixer
+
+```tsx
+<RuleCard
+  name="no-async-without-await"
+  description="Disallow async functions that do not use await"
+  severity="error"
+  scope="action"
+  fixable
+  href="/rules/async/no-async-without-await"
+/>
+```
+
+### Warning Rule
+
+```tsx
+<RuleCard
+  name="no-console"
+  description="Disallow console statements in production code"
+  severity="warn"
+  scope="cross-cutting"
+  href="/rules/best-practices/no-console"
+/>
+```
+
+### Rule Grid Layout
+
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <RuleCard
+    name="no-direct-prisma-import"
+    description="Prevent direct Prisma client imports"
+    severity="error"
+    scope="model-action"
+    href="/rules/model/no-direct-prisma-import"
+  />
+  <RuleCard
+    name="use-gadget-logger"
+    description="Require using Gadget logger instead of console"
+    severity="warn"
+    scope="cross-cutting"
+    href="/rules/logging/use-gadget-logger"
+  />
+</div>
+```
+
+## Hover Effects
+
+When hovering over the card:
+- Border changes to accent color with muted opacity
+- Shadow elevation increases (shadow-raised)
+- Smooth transition applied
+
+## Type Exports
+
+The component exports the `RuleScope` type:
+
+```tsx
+import { type RuleScope } from "@aurelienbbn/gadget-ui/components";
+
+const scope: RuleScope = "model-action";
+```
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/rule-card.tsx:19`
+
+The component uses Card, CardHeader, CardTitle, CardContent, SeverityBadge, and Badge components internally.

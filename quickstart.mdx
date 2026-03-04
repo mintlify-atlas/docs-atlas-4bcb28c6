@@ -1,80 +1,262 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get started with Gadget Developer Tools in under 5 minutes - install both packages and validate your first action file
 ---
 
-## Get started in three steps
+This guide gets you up and running with both the ESLint plugin and UI component library in your Gadget project.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
+Before starting, make sure you have:
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
+- Node.js 18 or higher
+- A Gadget project with action files
+- Basic familiarity with ESLint configuration
+
+## ESLint Plugin Setup
+
+<Steps>
+  <Step title="Install the plugin">
+    Add `@aurelienbbn/eslint-plugin-gadget` to your project along with ESLint v9+.
     
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
+    <CodeGroup>
+    ```bash pnpm
+    pnpm add -D @aurelienbbn/eslint-plugin-gadget eslint
+    ```
     
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
+    ```bash npm
+    npm install -D @aurelienbbn/eslint-plugin-gadget eslint
+    ```
     
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+    ```bash yarn
+    yarn add -D @aurelienbbn/eslint-plugin-gadget eslint
+    ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Configure ESLint">
+    Create or update your `eslint.config.js` with the recommended preset:
+    
+    ```javascript eslint.config.js
+    import gadget from "@aurelienbbn/eslint-plugin-gadget";
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    export default [
+      gadget.configs.recommended,
+      // ...your other configs
+    ];
+    ```
+    
+    <Note>
+      The plugin automatically activates on Gadget action files: `**/api/actions/**/*.{js,ts}` and `**/api/models/**/actions/**/*.{js,ts}`
+    </Note>
+  </Step>
+  
+  <Step title="Run ESLint">
+    Validate your action files:
+    
+    ```bash
+    eslint .
+    ```
+    
+    If you have any validation errors, ESLint will report them with fixable suggestions.
+  </Step>
+  
+  <Step title="Fix issues automatically">
+    Many rules support auto-fixing. Run ESLint with the `--fix` flag:
+    
+    ```bash
+    eslint . --fix
+    ```
+    
+    This will automatically fix issues like:
+    - Invalid timeout values (clamped to 900000ms)
+    - Numeric separators in options
+    - Empty `onSuccess` exports
+    - Missing `returnType` values
+  </Step>
+</Steps>
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+### Example: Fixing a validation error
 
-### Step 3: Go live
+Here's what you might see when running ESLint on an action file:
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+```typescript api/models/widget/actions/create.ts
+import type { ActionOptions } from "gadget-server";
 
-## Next steps
+export const options: ActionOptions = {
+  timeoutMS: 1_000_000, // Error: exceeds 900000ms
+  // Error: returnType must be explicitly set
+};
 
-Now that you have your docs running, explore these key features:
+export const run = async () => {
+  // action logic
+};
+```
+
+After running `eslint . --fix`, the file is corrected:
+
+```typescript api/models/widget/actions/create.ts
+import type { ActionOptions } from "gadget-server";
+
+export const options: ActionOptions = {
+  timeoutMS: 900000, // 15 minutes
+  returnType: true,
+};
+
+export const run = async () => {
+  // action logic
+};
+```
+
+## UI Components Setup
+
+<Steps>
+  <Step title="Install the package">
+    Add `@aurelienbbn/gadget-ui` along with its peer dependencies:
+    
+    <CodeGroup>
+    ```bash pnpm
+    pnpm add @aurelienbbn/gadget-ui react react-dom tailwindcss
+    ```
+    
+    ```bash npm
+    npm install @aurelienbbn/gadget-ui react react-dom tailwindcss
+    ```
+    
+    ```bash yarn
+    yarn add @aurelienbbn/gadget-ui react react-dom tailwindcss
+    ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Configure Tailwind">
+    Update your `tailwind.config.js` to use the Gadget preset:
+    
+    ```javascript tailwind.config.js
+    import { gadgetPreset } from "@aurelienbbn/gadget-ui/tailwind-preset";
+
+    export default {
+      presets: [gadgetPreset],
+      content: [
+        "./src/**/*.{ts,tsx}",
+        "./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js",
+      ],
+    };
+    ```
+  </Step>
+  
+  <Step title="Import global styles">
+    Add the global CSS to your main CSS file or root layout:
+    
+    ```css styles/globals.css
+    @import "@aurelienbbn/gadget-ui/styles";
+    ```
+    
+    This imports CSS variables for colors, shadows, typography, and theme support.
+  </Step>
+  
+  <Step title="Use components">
+    Import and use components in your React application:
+    
+    ```tsx app/page.tsx
+    import { Button, Badge, Card, CardHeader, CardTitle, CardContent } from "@aurelienbbn/gadget-ui/components";
+
+    export default function Dashboard() {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome to Gadget</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Badge variant="accent">New Feature</Badge>
+            <Button variant="primary" className="mt-4">
+              Get Started
+            </Button>
+          </CardContent>
+        </Card>
+      );
+    }
+    ```
+  </Step>
+</Steps>
+
+### Example: Theme switching
+
+Toggle between dark and light themes by setting the `data-theme` attribute on your root element:
+
+```tsx app/theme-toggle.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button } from "@aurelienbbn/gadget-ui/components";
+
+export function ThemeToggle() {
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+    >
+      {theme === "dark" ? "🌙" : "☀️"}
+    </Button>
+  );
+}
+```
+
+## Next Steps
+
+Now that you have both packages installed, explore the documentation:
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="ESLint Rules" icon="list-check" href="/rules/options/action-no-invalid-options">
+    Browse all 16 validation rules organized by category
+  </Card>
+  <Card title="Component Library" icon="palette" href="/components/button">
+    Explore the full component API with examples
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/eslint-plugin/configuration">
+    Learn advanced ESLint configuration options
+  </Card>
+  <Card title="Design Tokens" icon="swatchbook" href="/ui-components/theming">
+    Customize colors, typography, and theme behavior
+  </Card>
 </CardGroup>
 
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
+## Common Issues
+
+<Accordion title="ESLint doesn't validate my action files">
+  Make sure your action files match the expected patterns:
+  - `**/api/actions/**/*.{js,ts}` for global actions
+  - `**/api/models/**/actions/**/*.{js,ts}` for model actions
+  
+  Check your ESLint configuration includes the Gadget plugin config.
+</Accordion>
+
+<Accordion title="Tailwind classes aren't working">
+  Ensure you:
+  1. Added the Gadget preset to `tailwind.config.js`
+  2. Included the UI package dist folder in your `content` array
+  3. Imported the global styles in your CSS entry point
+  
+  Run `pnpm run build` in the UI package if using local development.
+</Accordion>
+
+<Accordion title="Components don't have proper theming">
+  Check that:
+  1. You imported `@aurelienbbn/gadget-ui/styles` in your global CSS
+  2. Your root HTML element has the `data-theme` attribute set to "dark" or "light"
+  3. Your Tailwind config uses the Gadget preset (not a custom config)
+</Accordion>
+
+## Get Help
+
+If you encounter issues:
+
+- Check the [ESLint Plugin Configuration](/eslint-plugin/configuration) guide
+- Review the [UI Setup](/ui-components/setup) documentation
+- Open an issue on [GitHub](https://github.com/aurelienbobenrieth/gadget/issues)

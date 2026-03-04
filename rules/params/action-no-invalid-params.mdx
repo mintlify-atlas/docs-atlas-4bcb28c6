@@ -1,0 +1,169 @@
+---
+title: action-no-invalid-params
+description: Enforce that Gadget action params export only uses supported JSON schema types and properties.
+---
+
+This rule enforces that the `params` export in Gadget action files only uses supported JSON schema types and properties. Gadget supports a limited subset of JSON schema for parameter validation.
+
+## Rule Details
+
+This rule validates that parameter definitions:
+
+- Use only supported types: `string`, `number`, `integer`, `boolean`, `array`, `object`
+- Use only supported properties (mostly just `type`)
+- For object types, can include `properties` and `additionalProperties`
+- Are defined as object literals, not strings or variables
+
+**Supported types:**
+- `"string"`
+- `"number"`
+- `"integer"`
+- `"boolean"`
+- `"array"`
+- `"object"`
+
+**Supported properties:**
+- `type` (required for all parameters)
+- `properties` (object types only)
+- `additionalProperties` (object types only, must be boolean)
+
+**Severity:** Error
+
+**Auto-fixable:** No
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Unsupported type
+export const params = {
+  birthDate: { type: "date" }
+};
+
+// Missing type property
+export const params = {
+  name: {}
+};
+
+// Unsupported property
+export const params = {
+  name: { type: "string", required: true }
+};
+
+// Unsupported property: minLength
+export const params = {
+  name: { type: "string", minLength: 1 }
+};
+
+// Unsupported property: enum
+export const params = {
+  status: { type: "string", enum: ["active", "inactive"] }
+};
+
+// Type as variable
+export const params = {
+  name: { type: someVariable }
+};
+
+// String literal instead of object
+export const params = {
+  name: "string"
+};
+
+// Properties must be an object
+export const params = {
+  data: { type: "object", properties: "invalid" }
+};
+
+// additionalProperties must be boolean
+export const params = {
+  data: { type: "object", additionalProperties: "yes" }
+};
+```
+
+### Correct
+
+```typescript
+// Basic types
+export const params = {
+  name: { type: "string" },
+  count: { type: "number" },
+  age: { type: "integer" },
+  enabled: { type: "boolean" },
+  tags: { type: "array" }
+};
+
+// Object type with properties
+export const params = {
+  fields: {
+    type: "object",
+    properties: {
+      fileName: { type: "string" },
+      fileSize: { type: "number" }
+    },
+    additionalProperties: true
+  }
+};
+
+// Object type with nested properties
+export const params = {
+  data: {
+    type: "object",
+    properties: {
+      name: { type: "string" },
+      count: { type: "number" }
+    }
+  }
+};
+
+// Object type with additionalProperties false
+export const params = {
+  data: {
+    type: "object",
+    additionalProperties: false
+  }
+};
+```
+
+## Common Issues
+
+### Validation properties not supported
+
+JSON schema validation properties like `minLength`, `maxLength`, `minimum`, `maximum`, `pattern`, `format`, etc. are not supported:
+
+```typescript
+// Invalid
+export const params = {
+  email: { type: "string", format: "email" }
+};
+
+// Use custom validation in your action code instead
+export const params = {
+  email: { type: "string" }
+};
+```
+
+### Array items not configurable
+
+The `items` property for arrays is not supported:
+
+```typescript
+// Invalid
+export const params = {
+  tags: { type: "array", items: { type: "string" } }
+};
+
+// Use array type without items specification
+export const params = {
+  tags: { type: "array" }
+};
+```
+
+<Tip>
+While Gadget only supports basic type validation in the params export, you can perform custom validation in your action code using libraries like Zod or Yup.
+</Tip>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents configuration that Gadget cannot parse or will ignore.

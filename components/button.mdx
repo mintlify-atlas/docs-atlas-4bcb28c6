@@ -1,0 +1,128 @@
+---
+title: 'Button'
+description: 'Interactive button component with multiple variants and sizes'
+---
+
+## Overview
+
+The `Button` component provides a styled, accessible button with support for multiple visual variants and sizes. Built with class-variance-authority (CVA) for type-safe variant handling.
+
+## Import
+
+```tsx
+import { Button } from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<Button>Click me</Button>
+```
+
+## Variants
+
+The Button component supports three visual variants:
+
+<Tabs>
+  <Tab title="Primary">
+    ```tsx
+    <Button variant="primary">
+      Primary Button
+    </Button>
+    ```
+    
+    Features a purple gradient background with accent shadows. This is the default variant.
+  </Tab>
+  
+  <Tab title="Secondary">
+    ```tsx
+    <Button variant="secondary">
+      Secondary Button
+    </Button>
+    ```
+    
+    Displays a raised surface background with subtle border styling.
+  </Tab>
+  
+  <Tab title="Ghost">
+    ```tsx
+    <Button variant="ghost">
+      Ghost Button
+    </Button>
+    ```
+    
+    Transparent background that shows surface color on hover.
+  </Tab>
+</Tabs>
+
+## Sizes
+
+Three size options are available:
+
+```tsx
+<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>
+<Button size="lg">Large</Button>
+```
+
+- `sm` - Height: 28px (7), Padding: 12px (3), Font: 12px (xs)
+- `md` - Height: 32px (8), Padding: 16px (4), Font: 14px (sm) - Default
+- `lg` - Height: 36px (9), Padding: 20px (5), Font: 14px (sm)
+
+## Props
+
+<ParamField path="variant" type="'primary' | 'secondary' | 'ghost'" default="primary">
+  The visual style variant of the button.
+</ParamField>
+
+<ParamField path="size" type="'sm' | 'md' | 'lg'" default="md">
+  The size of the button.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disables the button and reduces opacity to 50%.
+</ParamField>
+
+The Button component extends `ButtonHTMLAttributes<HTMLButtonElement>`, so all standard button attributes are supported (onClick, type, disabled, etc.).
+
+## Accessibility Features
+
+- Focus visible outline with 2px accent color and offset
+- Disabled state prevents pointer events
+- Semantic `<button>` element
+- Proper ARIA attributes inherited from native button
+
+## Examples
+
+### Disabled State
+
+```tsx
+<Button disabled>Disabled Button</Button>
+```
+
+### With Icon and Text
+
+```tsx
+<Button>
+  <Icon name="plus" />
+  Add Item
+</Button>
+```
+
+The button uses `gap-1.5` to automatically space child elements.
+
+### Custom Styling
+
+```tsx
+<Button className="w-full">Full Width Button</Button>
+```
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/button.tsx:55`
+
+The Button uses `forwardRef` to support ref forwarding to the underlying button element.

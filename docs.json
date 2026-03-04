@@ -1,122 +1,123 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Gadget Developer Tools",
+  "theme": "aspen",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#94cb04",
+    "light": "#545454",
+    "dark": "#94cb04"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://media.brand.dev/288cc7c4-5cef-4376-950b-bdf0083eedae.png",
+  "logo": {
+    "light": "https://media.brand.dev/288cc7c4-5cef-4376-950b-bdf0083eedae.png",
+    "dark": "https://media.brand.dev/288cc7c4-5cef-4376-950b-bdf0083eedae.png"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/aurelienbobenrieth/gadget"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/aurelienbobenrieth/gadget"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction",
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "ESLint Plugin",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "eslint-plugin/installation",
+              "eslint-plugin/configuration",
+              "eslint-plugin/configs"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "UI Components",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "ui-components/installation",
+              "ui-components/setup",
+              "ui-components/theming"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Rules",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Options Validation",
             "pages": [
-              "api-reference/introduction"
+              "rules/options/action-no-invalid-options",
+              "rules/options/action-no-invalid-timeout-ms",
+              "rules/options/action-require-timeout-ms-comment",
+              "rules/options/action-require-explicit-return-type",
+              "rules/options/global-action-no-action-type",
+              "rules/options/model-action-invalid-action-type",
+              "rules/options/model-action-no-invalid-trigger",
+              "rules/options/model-action-no-transactional-timeout-mismatch"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Params Validation",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "rules/params/action-no-invalid-params"
+            ]
+          },
+          {
+            "group": "Runtime Safety",
+            "pages": [
+              "rules/runtime/action-no-empty-on-success",
+              "rules/runtime/action-no-return-value-in-on-success",
+              "rules/runtime/action-no-await-handle-result-in-action",
+              "rules/runtime/action-require-run-with-on-success",
+              "rules/runtime/action-require-action-run-type"
+            ]
+          },
+          {
+            "group": "Enqueue Safety",
+            "pages": [
+              "rules/enqueue/action-no-enqueue-max-concurrency-exceeded",
+              "rules/enqueue/action-no-implicit-enqueue-retries"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Components",
+            "pages": [
+              "components/button",
+              "components/badge",
+              "components/card",
+              "components/code-block",
+              "components/callout",
+              "components/severity-badge",
+              "components/rule-card",
+              "components/rule-example-tabs"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "components/utilities"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

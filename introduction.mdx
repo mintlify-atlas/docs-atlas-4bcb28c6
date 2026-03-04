@@ -1,0 +1,100 @@
+---
+title: Introduction
+description: Overview of the Gadget Developer Tools monorepo - ESLint plugin and UI component library for building high-quality Gadget applications
+---
+
+The Gadget Developer Tools monorepo provides essential tooling for [Gadget](https://gadget.dev) development. It includes two complementary packages: an ESLint plugin for validating Gadget action files and a design system for building consistent, polished UIs.
+
+## Packages
+
+### eslint-plugin-gadget
+
+ESLint rules for Gadget action files. Catches invalid options, params, timeout values, and runtime issues before they hit production.
+
+**Key features:**
+
+- 16 rules covering options validation, params validation, runtime safety, and enqueue patterns
+- Auto-fixes for common issues (invalid timeout values, numeric separators, template literals)
+- File pattern detection - rules only activate on Gadget action files
+- Two preset configs: `recommended` (warnings + errors) and `strict` (all errors)
+- Compatible with ESLint v9+ flat config
+
+**Install:**
+
+```bash
+pnpm add -D @aurelienbbn/eslint-plugin-gadget eslint
+```
+
+**Use cases:**
+
+- Validate `ActionOptions` exports contain only JSON-serializable values
+- Enforce timeout constraints (max 15 minutes, 5 seconds for transactional actions)
+- Prevent `await handle.result()` in action run functions (causes transaction timeouts)
+- Require explicit `retries` in `api.enqueue()` calls (Gadget defaults to 6)
+- Catch unsupported JSON Schema features in `params` exports
+
+### gadget-ui
+
+Design system and component library built with React, Tailwind CSS, and class-variance-authority. Features a dark-first, neo-skeuomorphic aesthetic inspired by Gadget's visual identity.
+
+**Key features:**
+
+- 8 React components with variants (Button, Badge, Card, CodeBlock, Callout, and more)
+- Tailwind CSS preset with design tokens mapped to CSS custom properties
+- Dark and light theme support via `data-theme` attribute
+- Global CSS with Inter and Inconsolata fonts, semantic color system
+- `cn()` utility for merging class names with tailwind-merge
+
+**Install:**
+
+```bash
+pnpm add @aurelienbbn/gadget-ui react react-dom tailwindcss
+```
+
+**Use cases:**
+
+- Build documentation sites with consistent Gadget branding
+- Create dashboards and admin UIs with pre-built components
+- Leverage semantic design tokens for theming and customization
+- Syntax highlighting with Shiki integration
+
+## Monorepo structure
+
+```
+gadget/
+  packages/
+    eslint-plugin-gadget/   # ESLint plugin (16 rules)
+    gadget-ui/              # Design system (components, tokens, preset)
+  apps/
+    eslint-plugin-gadget-docs/  # Astro + Starlight documentation site
+```
+
+Both packages are built with tsup and output ESM, CJS, and TypeScript definitions. The monorepo uses pnpm workspaces and Changesets for versioning.
+
+## Requirements
+
+- **Node:** 18 or higher
+- **Package manager:** pnpm (recommended), npm, or yarn
+- **eslint-plugin-gadget:** ESLint v9+, @typescript-eslint/utils v8+
+- **gadget-ui:** React 18+, Tailwind CSS 3.4+
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get both packages set up in under 5 minutes
+  </Card>
+  <Card title="ESLint Plugin" icon="shield-check" href="/eslint-plugin/installation">
+    Install and configure the ESLint plugin
+  </Card>
+  <Card title="UI Components" icon="palette" href="/ui-components/installation">
+    Set up the design system in your project
+  </Card>
+  <Card title="Theming" icon="sun-moon" href="/ui-components/theming">
+    Learn about design tokens and theme switching
+  </Card>
+</CardGroup>
+
+## License
+
+Both packages are MIT licensed.

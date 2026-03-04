@@ -1,0 +1,122 @@
+---
+title: action-no-implicit-enqueue-retries
+description: Require explicit retries option on api.enqueue calls to avoid unintended retry behavior.
+---
+
+This rule requires that all `api.enqueue` calls explicitly specify the `retries` option. Gadget defaults to 6 retries with exponential backoff, which may cause unnecessary costs and delays for errors that are deterministic (will fail every time).
+
+## Rule Details
+
+This rule checks all `api.enqueue` calls and reports an error if the `retries` option is not explicitly set. The `retries` option can be:
+
+- A number: `retries: 0` or `retries: 3`
+- An object: `retries: { retryCount: 5, backoffFactor: 2 }`
+
+**Severity:** Warning
+
+**Auto-fixable:** No
+
+## Examples
+
+### Incorrect
+
+```typescript
+// No options argument
+api.enqueue(api.publish, {});
+
+// Options present but no retries
+api.enqueue(api.publish, {}, {
+  queue: "my-queue"
+});
+
+// Empty options object
+api.enqueue(api.publish, {}, {});
+
+// Only one argument
+api.enqueue(api.publish);
+```
+
+### Correct
+
+```typescript
+// Explicit zero retries
+api.enqueue(api.publish, {}, {
+  retries: 0
+});
+
+// Explicit retry count
+api.enqueue(api.publish, {}, {
+  retries: 3
+});
+
+// Explicit retry object
+api.enqueue(api.publish, {}, {
+  retries: {
+    retryCount: 5,
+    backoffFactor: 2
+  }
+});
+
+// With queue and retries
+api.enqueue(api.publish, {}, {
+  queue: "my-queue",
+  retries: 0
+});
+```
+
+## Why This Matters
+
+Gadget's default retry behavior is 6 retries with exponential backoff. This is helpful for transient errors (network issues, temporary service outages), but problematic for deterministic errors that will fail every time (validation errors, missing data, etc.).
+
+Without explicit retries:
+
+- Deterministic errors will retry 6 times unnecessarily
+- Each retry incurs billing costs
+- Exponential backoff means failed jobs take a long time to fully fail
+- Logs fill up with duplicate error messages
+
+### Example Impact
+
+```typescript
+// This job will retry 6 times even though validation will fail every time
+api.enqueue(api.sendEmail, { email: "invalid" });
+
+// With explicit retries, it fails immediately
+api.enqueue(api.sendEmail, { email: "invalid" }, { retries: 0 });
+```
+
+## Recommended Settings
+
+Choose based on your error type:
+
+- **Deterministic errors** (validation, business logic): `retries: 0`
+- **Transient errors** (API calls, external services): `retries: 3` or higher
+- **Critical jobs** that must succeed: Use higher retry counts with appropriate backoff
+
+```typescript
+// Validation errors - no retries
+api.enqueue(api.processOrder, { orderId }, { retries: 0 });
+
+// External API call - retry on transient failures
+api.enqueue(api.fetchExternalData, {}, { retries: 5 });
+
+// Critical notification - retry with backoff
+api.enqueue(api.sendCriticalAlert, { alert }, {
+  retries: {
+    retryCount: 10,
+    backoffFactor: 2
+  }
+});
+```
+
+<Tip>
+Start with `retries: 0` and add retries only when you have identified specific transient failures that benefit from retries.
+</Tip>
+
+<Note>
+This rule applies to all files, not just action files, since `api.enqueue` can be called from anywhere in your codebase.
+</Note>
+
+## When to Use
+
+This rule is included in the `strict` config. While not critical, it helps prevent unnecessary costs and makes retry behavior explicit and intentional.

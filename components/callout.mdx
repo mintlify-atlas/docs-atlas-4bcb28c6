@@ -1,0 +1,155 @@
+---
+title: 'Callout'
+description: 'Highlighted callout component for important information with variants'
+---
+
+## Overview
+
+The `Callout` component displays highlighted blocks of important information with semantic color variants and optional icons. Ideal for tips, warnings, errors, and informational notes.
+
+## Import
+
+```tsx
+import { Callout } from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<Callout>
+  This is an informational callout.
+</Callout>
+```
+
+## Variants
+
+The Callout component supports four semantic variants, each with a unique icon:
+
+<Tabs>
+  <Tab title="Info">
+    ```tsx
+    <Callout variant="info">
+      Informational content goes here.
+    </Callout>
+    ```
+    
+    Blue accent styling with info icon (ℹ). This is the default variant.
+  </Tab>
+  
+  <Tab title="Warning">
+    ```tsx
+    <Callout variant="warning">
+      Warning message goes here.
+    </Callout>
+    ```
+    
+    Yellow/orange styling with warning icon (⚠).
+  </Tab>
+  
+  <Tab title="Danger">
+    ```tsx
+    <Callout variant="danger">
+      Error or danger message goes here.
+    </Callout>
+    ```
+    
+    Red styling with error icon (✕).
+  </Tab>
+  
+  <Tab title="Tip">
+    ```tsx
+    <Callout variant="tip">
+      Helpful tip or success message goes here.
+    </Callout>
+    ```
+    
+    Green styling with tip icon (✦).
+  </Tab>
+</Tabs>
+
+## Props
+
+<ParamField path="variant" type="'info' | 'warning' | 'danger' | 'tip'" default="info">
+  The semantic variant of the callout.
+</ParamField>
+
+<ParamField path="title" type="string">
+  Optional title displayed above the content in semibold text.
+</ParamField>
+
+<ParamField path="children" type="ReactNode" required>
+  The content of the callout.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+The Callout component extends `HTMLAttributes<HTMLDivElement>`, so all standard div attributes are supported.
+
+## Design Details
+
+- Flex layout with 12px gap between icon and content
+- Rounded corners with border
+- 14px (sm) text size
+- Icon sized at 16px (base) with matching variant color
+- Icon has `aria-hidden="true"` for accessibility
+- Uses `role="note"` for semantic HTML
+
+## Examples
+
+### With Title
+
+```tsx
+<Callout variant="warning" title="Important Note">
+  Make sure to save your changes before navigating away.
+</Callout>
+```
+
+### Info Callout
+
+```tsx
+<Callout variant="info">
+  You can customize the appearance using the className prop.
+</Callout>
+```
+
+### Danger Callout
+
+```tsx
+<Callout variant="danger" title="Error">
+  Failed to load data. Please try again later.
+</Callout>
+```
+
+### Tip Callout
+
+```tsx
+<Callout variant="tip" title="Pro Tip">
+  Use keyboard shortcuts to navigate faster through the interface.
+</Callout>
+```
+
+### With Formatted Content
+
+```tsx
+<Callout variant="info">
+  <p>This callout supports rich content.</p>
+  <ul>
+    <li>First item</li>
+    <li>Second item</li>
+  </ul>
+</Callout>
+```
+
+The content area has `[&_p]:m-0` to remove default paragraph margins.
+
+## Accessibility
+
+- Icon is hidden from screen readers with `aria-hidden="true"`
+- Semantic `role="note"` attribute
+- Color is not the only indicator (icons provide additional context)
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/callout.tsx:39`

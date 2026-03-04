@@ -1,0 +1,83 @@
+---
+title: model-action-invalid-action-type
+description: Disallow invalid actionType values in model action options.
+---
+
+This rule enforces that the `actionType` property in model action options is set to one of the valid values: `create`, `update`, `delete`, or `custom`. Invalid action types will cause runtime errors in Gadget.
+
+## Rule Details
+
+This rule checks the `actionType` property in model action options and reports an error if the value is not one of the supported types.
+
+**Valid action types:**
+- `"create"`
+- `"update"`
+- `"delete"`
+- `"custom"`
+
+**Severity:** Error
+
+**Auto-fixable:** No
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Invalid type: scheduler
+export const options: ActionOptions = {
+  actionType: "scheduler"
+};
+
+// Invalid type: read
+export const options: ActionOptions = {
+  actionType: "read"
+};
+
+// Invalid type: unknown
+export const options: ActionOptions = {
+  actionType: "unknown"
+};
+
+// Empty string
+export const options: ActionOptions = {
+  actionType: ""
+};
+```
+
+### Correct
+
+```typescript
+// Valid create action type
+export const options: ActionOptions = {
+  actionType: "create"
+};
+
+// Valid update action type
+export const options: ActionOptions = {
+  actionType: "update"
+};
+
+// Valid delete action type
+export const options: ActionOptions = {
+  actionType: "delete"
+};
+
+// Valid custom action type
+export const options: ActionOptions = {
+  actionType: "custom"
+};
+
+// No actionType property (allowed)
+export const options: ActionOptions = {
+  returnType: true
+};
+```
+
+<Note>
+This rule only applies to model actions (files in `api/models/*/actions/`). Global actions should not have an `actionType` property at all.
+</Note>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents runtime errors by catching invalid action types at development time.

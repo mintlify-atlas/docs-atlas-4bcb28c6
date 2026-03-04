@@ -1,0 +1,129 @@
+---
+title: 'CodeBlock'
+description: 'Syntax-highlighted code block component powered by Shiki'
+---
+
+## Overview
+
+The `CodeBlock` component displays syntax-highlighted code using [Shiki](https://shiki.style). Features a custom dark theme optimized for the Gadget design system.
+
+<Note>
+This is a client component (`"use client"`) and uses React hooks for syntax highlighting.
+</Note>
+
+## Import
+
+```tsx
+import { CodeBlock } from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<CodeBlock 
+  code="const greeting = 'Hello, world!';" 
+  language="typescript" 
+/>
+```
+
+## Props
+
+<ParamField path="code" type="string" required>
+  The source code to display.
+</ParamField>
+
+<ParamField path="language" type="string" required>
+  The programming language for syntax highlighting. Supports any Shiki BundledLanguage (typescript, javascript, python, etc.).
+</ParamField>
+
+<ParamField path="title" type="string">
+  Optional title displayed in a header above the code block.
+</ParamField>
+
+<ParamField path="showLineNumbers" type="boolean" default="false">
+  Whether to display line numbers.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+The CodeBlock component extends `HTMLAttributes<HTMLDivElement>`, so all standard div attributes are supported.
+
+## Examples
+
+### With Title
+
+```tsx
+<CodeBlock 
+  code={`function add(a: number, b: number) {
+  return a + b;
+}`}
+  language="typescript"
+  title="utils/math.ts"
+/>
+```
+
+### With Line Numbers
+
+```tsx
+<CodeBlock 
+  code={`function greet(name: string) {
+  console.log(\`Hello, \${name}!\`);
+}`}
+  language="typescript"
+  showLineNumbers
+/>
+```
+
+### Multiple Languages
+
+```tsx
+<CodeBlock 
+  code={`# Install dependencies
+npm install @aurelienbbn/gadget-ui`}
+  language="bash"
+  title="Terminal"
+/>
+```
+
+## Theme
+
+The CodeBlock uses a custom "gadget-dark" theme with the following syntax colors:
+
+- **Comments**: `#55556A` (muted gray)
+- **Keywords**: `#7C6FFF` (purple)
+- **Strings**: `#22C55E` (green)
+- **Functions**: `#C4B5FD` (light purple)
+- **Numbers**: `#F59E0B` (orange)
+- **Variables**: `#F2F2F5` (foreground)
+- **Types**: `#7C6FFF` (purple)
+- **Constants**: `#EF4444` (red)
+- **Object Keys**: `#C4B5FD` (light purple)
+
+**Background**: `#0A0A0F` (dark background)  
+**Foreground**: `#F2F2F5` (light foreground)
+
+## Fallback Rendering
+
+If Shiki fails to load or highlight the code, the component automatically falls back to a plain text rendering with the same styling structure.
+
+```tsx
+// Fallback displays code in monospace font without syntax highlighting
+<CodeBlockFallback code={code} showLineNumbers={showLineNumbers} />
+```
+
+## Styling
+
+- Border with border-color
+- Dark background matching the theme
+- Rounded corners
+- Overflow-x-auto for horizontal scrolling
+- 12px (xs) font size with relaxed leading
+- 12px (3) padding
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/code-block.tsx:56`
+
+The component uses `useEffect` to asynchronously highlight code with Shiki and update the rendered HTML.

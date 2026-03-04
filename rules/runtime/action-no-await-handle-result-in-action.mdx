@@ -1,0 +1,135 @@
+---
+title: action-no-await-handle-result-in-action
+description: Disallow awaiting handle.result() inside run or onSuccess exports in Gadget actions.
+---
+
+This rule disallows calling `await handle.result()` inside the `run` or `onSuccess` functions. Awaiting a background action result in these contexts causes significant problems:
+
+- In `run`: Blocks the transaction and can cause `GGT_TRANSACTION_TIMEOUT` errors
+- In `onSuccess`: Bills for the full wait time of the background action
+
+## Rule Details
+
+This rule detects `await handle.result()` calls directly inside `run` or `onSuccess` exports (not in nested callbacks or helper functions) and reports them with context-specific error messages.
+
+**Severity:** Warning
+
+**Auto-fixable:** No
+
+## Examples
+
+### Incorrect
+
+```typescript
+// In run function - blocks transaction
+export const run = async () => {
+  const handle = await api.enqueue(api.publish, {});
+  await handle.result(); // BAD: blocks transaction
+};
+
+// In onSuccess function - bills for wait time
+export const onSuccess = async () => {
+  const handle = await api.enqueue(api.publish, {});
+  await handle.result(); // BAD: bills for wait time
+};
+
+// Chained call
+export const run = async () => {
+  await (await api.enqueue(api.publish, {})).result();
+};
+
+// Assigned to variable
+export const onSuccess = async () => {
+  const result = await handle.result();
+};
+```
+
+### Correct
+
+```typescript
+// Store the handle ID, poll from frontend
+export const run: ActionRun = async () => {
+  const handle = await api.enqueue(api.publish, {});
+  return { backgroundJobId: handle.id };
+};
+
+// Call result() without awaiting (starts polling)
+export const run = async () => {
+  handle.result(); // OK: not awaited
+};
+
+// In a helper function (not directly in run/onSuccess)
+const processJobs = async () => {
+  await handle.result(); // OK: in nested function
+};
+
+export const run = async () => {
+  await processJobs();
+};
+
+// In nested callback
+export const onSuccess = async () => {
+  await items.map(async (item) => {
+    await handle.result(); // OK: in callback
+  });
+};
+```
+
+## Why This Is a Problem
+
+### In `run` functions
+
+Model action `run` functions execute inside a database transaction by default. Awaiting a background job result blocks the transaction for the entire duration of the background job, which can easily exceed the 5-second transaction timeout limit.
+
+```typescript
+// BAD: This will likely cause GGT_TRANSACTION_TIMEOUT
+export const run: ActionRun = async ({ record }) => {
+  const handle = await api.enqueue(api.expensiveTask, {});
+  const result = await handle.result(); // Blocks transaction!
+  record.processedData = result;
+};
+```
+
+### In `onSuccess` functions
+
+Awaiting a background job in `onSuccess` keeps the action running and bills you for the entire wait time, even though you could poll for the result from the frontend instead.
+
+```typescript
+// BAD: Bills for full background job duration
+export const onSuccess: ActionOnSuccess = async () => {
+  const handle = await api.enqueue(api.notify, {});
+  await handle.result(); // Expensive wait!
+};
+```
+
+## Recommended Patterns
+
+### Store the handle ID and poll from frontend
+
+```typescript
+export const run: ActionRun = async () => {
+  const handle = await api.enqueue(api.expensiveTask, {});
+  return { jobId: handle.id };
+};
+
+// Then poll from your frontend using the jobId
+```
+
+### Use a separate polling action
+
+```typescript
+// Create a separate action to check status
+export const run: ActionRun = async ({ jobId }) => {
+  const handle = api.getBackgroundActionHandle(jobId);
+  const status = await handle.status();
+  return { status };
+};
+```
+
+<Warning>
+This rule helps prevent costly mistakes. Always store background job handles and poll for results outside of transactional contexts.
+</Warning>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents performance problems and unexpected timeouts.

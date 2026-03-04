@@ -1,0 +1,103 @@
+---
+title: action-no-return-value-in-on-success
+description: Disallow returning a value from onSuccess in Gadget actions.
+---
+
+This rule disallows returning a value from the `onSuccess` function. Gadget silently ignores return values from `onSuccess`, so returning a value has no effect and may mislead developers about the function's behavior.
+
+## Rule Details
+
+This rule checks for return statements with values inside `onSuccess` exports and suggests removing the value or the entire return statement.
+
+**Severity:** Warning
+
+**Auto-fixable:** Yes
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Returning an object literal
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  return { success: true };
+};
+
+// Returning a variable
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  await notify(record);
+  return someVariable;
+};
+
+// Returning await expression
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  return await someAsyncCall();
+};
+
+// Early return with value
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  if (record.changed) return someValue;
+  await notify(record);
+};
+```
+
+### Correct
+
+```typescript
+// No return statement
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  await notify(record);
+};
+
+// Bare return (no value)
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  await notify(record);
+  return;
+};
+
+// Early bare return
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  if (!record.changed) return;
+  await notify(record);
+};
+```
+
+## Auto-fixes
+
+The rule automatically fixes return statements:
+
+- If the return is the last statement in the block, it removes the entire statement
+- Otherwise, it replaces the return value with a bare `return;`
+
+```typescript
+// Before
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  return { success: true };
+};
+
+// After auto-fix (last statement removed)
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+};
+```
+
+```typescript
+// Before
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  if (record.changed) return someValue;
+  await notify(record);
+};
+
+// After auto-fix (value removed, bare return remains)
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  if (record.changed) return;
+  await notify(record);
+};
+```
+
+<Warning>
+Returning a value from `onSuccess` has no effect. Gadget silently discards the value. Use the `run` function if you need to return data to the client.
+</Warning>
+
+## When to Use
+
+This rule is included in the `recommended` config. It prevents confusion by making it clear that `onSuccess` return values are ignored.

@@ -1,0 +1,140 @@
+---
+title: 'SeverityBadge'
+description: 'Badge component for displaying ESLint rule severity levels'
+---
+
+## Overview
+
+The `SeverityBadge` component displays ESLint rule severity levels with appropriate icons and colors. Built on top of the Badge component with predefined configurations for each severity level.
+
+## Import
+
+```tsx
+import { SeverityBadge } from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<SeverityBadge severity="error" />
+```
+
+## Severity Levels
+
+The component supports four severity levels:
+
+<Tabs>
+  <Tab title="Error">
+    ```tsx
+    <SeverityBadge severity="error" />
+    ```
+    
+    Red destructive variant with error icon (⊗). Indicates critical issues that must be fixed.
+  </Tab>
+  
+  <Tab title="Warn">
+    ```tsx
+    <SeverityBadge severity="warn" />
+    ```
+    
+    Yellow/orange warning variant with warning icon (⚠). Indicates potential issues.
+  </Tab>
+  
+  <Tab title="Suggestion">
+    ```tsx
+    <SeverityBadge severity="suggestion" />
+    ```
+    
+    Purple accent variant with suggestion icon (◈). Indicates optional improvements.
+  </Tab>
+  
+  <Tab title="Off">
+    ```tsx
+    <SeverityBadge severity="off" />
+    ```
+    
+    Gray default variant with off icon (○). Indicates disabled rules.
+  </Tab>
+</Tabs>
+
+## Props
+
+<ParamField path="severity" type="'error' | 'warn' | 'suggestion' | 'off'" required>
+  The severity level to display.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply.
+</ParamField>
+
+## Severity Configuration
+
+Each severity level has a predefined configuration:
+
+```tsx
+const SEVERITY_CONFIG = {
+  error: { icon: "⊗", label: "Error", variant: "destructive" },
+  warn: { icon: "⚠", label: "Warning", variant: "warning" },
+  suggestion: { icon: "◈", label: "Suggestion", variant: "accent" },
+  off: { icon: "○", label: "Off", variant: "default" },
+};
+```
+
+## Design Details
+
+- Always uses the `sm` size variant from Badge
+- Icon is hidden from screen readers with `aria-hidden="true"`
+- Label text is accessible to screen readers
+- Each severity has a distinct icon and color for quick recognition
+
+## Examples
+
+### In a Rule List
+
+```tsx
+<div className="flex flex-col gap-2">
+  <div className="flex items-center gap-2">
+    <SeverityBadge severity="error" />
+    <span>no-unused-vars</span>
+  </div>
+  <div className="flex items-center gap-2">
+    <SeverityBadge severity="warn" />
+    <span>no-console</span>
+  </div>
+  <div className="flex items-center gap-2">
+    <SeverityBadge severity="off" />
+    <span>no-debugger</span>
+  </div>
+</div>
+```
+
+### With Custom Styling
+
+```tsx
+<SeverityBadge severity="error" className="ml-2" />
+```
+
+### All Severities
+
+```tsx
+<div className="flex gap-2">
+  <SeverityBadge severity="error" />
+  <SeverityBadge severity="warn" />
+  <SeverityBadge severity="suggestion" />
+  <SeverityBadge severity="off" />
+</div>
+```
+
+## Type Exports
+
+The component also exports the `Severity` type for use in TypeScript:
+
+```tsx
+import { type Severity } from "@aurelienbbn/gadget-ui/components";
+
+const ruleSeverity: Severity = "error";
+```
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/severity-badge.tsx:17`

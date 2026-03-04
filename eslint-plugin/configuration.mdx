@@ -1,0 +1,204 @@
+---
+title: Configuration
+description: Configure eslint.config.js, override rule severity, and understand file pattern detection
+---
+
+The plugin uses ESLint's flat config format (`eslint.config.js`). It provides two preset configs (`recommended` and `strict`) and automatically detects Gadget action files.
+
+## Basic configuration
+
+Import the plugin and use a preset:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  gadget.configs.recommended,
+];
+```
+
+This enables all 16 rules with appropriate severity levels:
+
+- Critical validation errors (invalid options, params, timeout) at `error`
+- Runtime safety and best practices at `warn`
+
+## File pattern detection
+
+Most rules only activate on files matching Gadget action file patterns:
+
+- `**/api/actions/**/*.{js,ts}` (global actions)
+- `**/api/models/**/actions/**/*.{js,ts}` (model actions)
+
+The pattern matching uses [minimatch](https://github.com/isaacs/minimatch) internally. If a file does not match, the plugin skips rule execution.
+
+### Exceptions: Global rules
+
+Two enqueue-related rules apply to **all files** because `api.enqueue()` can be called anywhere:
+
+- `action-no-enqueue-max-concurrency-exceeded`
+- `action-no-implicit-enqueue-retries`
+
+These rules check any file in your project for problematic `api.enqueue()` calls.
+
+## Overriding rules
+
+You can adjust individual rule severity by adding a second config object:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  gadget.configs.recommended,
+  {
+    rules: {
+      // Disable the timeout comment requirement
+      "gadget/action-require-timeout-ms-comment": "off",
+      
+      // Elevate runtime warnings to errors
+      "gadget/action-no-await-handle-result-in-action": "error",
+      "gadget/action-no-return-value-in-on-success": "error",
+    },
+  },
+];
+```
+
+### Override patterns
+
+<Tabs>
+  <Tab title="Disable a rule">
+    ```js
+    "gadget/action-require-timeout-ms-comment": "off"
+    ```
+  </Tab>
+  <Tab title="Change severity">
+    ```js
+    "gadget/action-no-empty-on-success": "error" // was warn
+    ```
+  </Tab>
+  <Tab title="Apply to specific files">
+    ```js
+    {
+      files: ["api/models/user/actions/**/*.ts"],
+      rules: {
+        "gadget/action-require-explicit-return-type": "off",
+      },
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Combining with other configs
+
+The plugin works alongside other ESLint configs. Place it before or after other configs depending on precedence:
+
+```js eslint.config.js
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  gadget.configs.strict, // Gadget rules apply last
+];
+```
+
+<Note>
+  Configs listed later override rules from earlier configs. If you want Gadget rules to take precedence, place `gadget.configs` last.
+</Note>
+
+## Strict mode
+
+Use `strict` config to enforce all rules at error level:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  gadget.configs.strict,
+];
+```
+
+This is useful for CI environments or projects with strict code quality requirements. See [Configs](/eslint-plugin/configs) for a detailed comparison.
+
+## Ignoring files
+
+Use ESLint's `ignores` key to exclude files:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  {
+    ignores: [
+      "**/dist/**",
+      "**/node_modules/**",
+      "api/actions/legacy/**", // Skip legacy actions
+    ],
+  },
+  gadget.configs.recommended,
+];
+```
+
+## Custom plugin usage
+
+If you prefer manual rule configuration, access the plugin object directly:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  {
+    plugins: { gadget },
+    rules: {
+      "gadget/action-no-invalid-options": "error",
+      "gadget/action-no-invalid-params": "error",
+      "gadget/action-no-invalid-timeout-ms": "error",
+      // ...add other rules as needed
+    },
+  },
+];
+```
+
+See the [full rule list](https://github.com/aurelienbobenrieth/gadget/tree/main/packages/eslint-plugin-gadget#rules) in the README.
+
+## Type information
+
+The plugin does not require TypeScript type information (parserServices). All rules operate on the AST level, so you do not need to configure `@typescript-eslint/parser` unless you are using other type-aware rules.
+
+## Example: Production config
+
+Here is a complete config for a Gadget project:
+
+```js eslint.config.js
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [
+  {
+    ignores: ["**/dist/**", "**/node_modules/**"],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  gadget.configs.recommended,
+  {
+    rules: {
+      // Project-specific overrides
+      "gadget/action-require-timeout-ms-comment": "off",
+      "gadget/action-no-await-handle-result-in-action": "error",
+    },
+  },
+];
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Configs" icon="sliders" href="/eslint-plugin/configs">
+    Compare recommended vs strict configs
+  </Card>
+  <Card title="Rules" icon="book" href="https://github.com/aurelienbobenrieth/gadget/tree/main/packages/eslint-plugin-gadget#rules">
+    Browse the full rule documentation
+  </Card>
+</CardGroup>

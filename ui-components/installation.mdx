@@ -1,0 +1,182 @@
+---
+title: Installation
+description: Install gadget-ui with npm, pnpm, or yarn and understand peer dependencies
+---
+
+The gadget-ui package requires React 18+, Tailwind CSS 3.4+, and Node 18+. It ships with ESM and CJS builds plus TypeScript definitions.
+
+## Install with package managers
+
+<Tabs>
+  <Tab title="pnpm">
+    ```bash
+    pnpm add @aurelienbbn/gadget-ui react react-dom tailwindcss
+    ```
+  </Tab>
+  <Tab title="npm">
+    ```bash
+    npm install @aurelienbbn/gadget-ui react react-dom tailwindcss
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add @aurelienbbn/gadget-ui react react-dom tailwindcss
+    ```
+  </Tab>
+</Tabs>
+
+## Peer dependencies
+
+The package declares these peer dependencies:
+
+| Package       | Version       | Purpose                                     |
+| ------------- | ------------- | ------------------------------------------- |
+| `react`       | `>=18.0.0`    | Component rendering                         |
+| `react-dom`   | `>=18.0.0`    | DOM bindings                                |
+| `tailwindcss` | `>=3.4.0`     | Design token integration and utility classes|
+
+<Note>
+  Tailwind CSS 4.x is supported. The preset uses CSS custom properties that work with both v3 and v4.
+</Note>
+
+## Direct dependencies
+
+The package bundles these dependencies (you do not need to install them separately):
+
+| Package                        | Version  | Purpose                                      |
+| ------------------------------ | -------- | -------------------------------------------- |
+| `@fontsource-variable/inter`   | `^5.2.8` | Variable Inter font                          |
+| `@fontsource/inconsolata`      | `^5.2.8` | Inconsolata monospace font (400, 700 weights)|
+| `class-variance-authority`     | `^0.7.1` | Component variant management                 |
+| `clsx`                         | `^2.1.1` | Conditional class name utility               |
+| `shiki`                        | `^3.22.0`| Syntax highlighting in CodeBlock component   |
+| `tailwind-merge`               | `^3.5.0` | Merges Tailwind classes in `cn()` utility    |
+
+## Package exports
+
+The package exposes three entry points:
+
+```json package.json exports
+{
+  "exports": {
+    "./components": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./tailwind-preset": {
+      "import": "./dist/tailwind-preset.js",
+      "require": "./dist/tailwind-preset.cjs"
+    },
+    "./styles": "./src/styles/globals.css"
+  }
+}
+```
+
+### Import paths
+
+<CodeGroup>
+  ```tsx Components
+  import { Button, Badge, Card } from "@aurelienbbn/gadget-ui/components";
+  ```
+
+  ```js Tailwind preset
+  import { gadgetPreset } from "@aurelienbbn/gadget-ui/tailwind-preset";
+  ```
+
+  ```css Global styles
+  @import "@aurelienbbn/gadget-ui/styles";
+  ```
+</CodeGroup>
+
+## Verify installation
+
+Check that the package is available:
+
+```bash
+node -e "console.log(require('@aurelienbbn/gadget-ui/components').Button)"
+```
+
+Expected output:
+
+```
+{ [Function: Button] displayName: 'Button' }
+```
+
+## Next steps
+
+After installation, configure Tailwind and import global styles:
+
+<Steps>
+  <Step title="Configure Tailwind">
+    Add the gadget-ui preset to `tailwind.config.js`:
+
+    ```js tailwind.config.js
+    import { gadgetPreset } from "@aurelienbbn/gadget-ui/tailwind-preset";
+
+    export default {
+      presets: [gadgetPreset],
+      content: [
+        "./src/**/*.{ts,tsx}",
+        "./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js",
+      ],
+    };
+    ```
+
+    <Warning>
+      You must include `./node_modules/@aurelienbbn/gadget-ui/dist/**/*.js` in your content array so Tailwind detects component classes.
+    </Warning>
+  </Step>
+
+  <Step title="Import global styles">
+    Add to your main CSS file:
+
+    ```css styles/globals.css
+    @import "@aurelienbbn/gadget-ui/styles";
+    ```
+
+    This imports:
+    - Inter Variable font
+    - Inconsolata monospace font (400, 700)
+    - CSS custom properties for colors, shadows, radius
+    - Dark and light theme definitions
+  </Step>
+
+  <Step title="Use components">
+    Import and render:
+
+    ```tsx src/App.tsx
+    import { Button } from "@aurelienbbn/gadget-ui/components";
+
+    export default function App() {
+      return <Button variant="primary">Click me</Button>;
+    }
+    ```
+  </Step>
+</Steps>
+
+See [Setup](/ui-components/setup) for a detailed walkthrough of Tailwind configuration.
+
+## TypeScript support
+
+The package includes TypeScript definitions (`dist/index.d.ts`). Type exports are available:
+
+```tsx
+import type { ButtonProps, BadgeProps } from "@aurelienbbn/gadget-ui/components";
+
+const props: ButtonProps = {
+  variant: "primary",
+  size: "md",
+  onClick: () => console.log("clicked"),
+};
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Setup" icon="wrench" href="/ui-components/setup">
+    Configure Tailwind and import global styles
+  </Card>
+  <Card title="Theming" icon="palette" href="/ui-components/theming">
+    Learn about design tokens and theme switching
+  </Card>
+</CardGroup>

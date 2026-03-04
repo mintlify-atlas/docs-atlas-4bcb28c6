@@ -1,0 +1,185 @@
+---
+title: 'Card'
+description: 'Container card component with header, content, and footer sub-components'
+---
+
+## Overview
+
+The `Card` component provides a flexible container with multiple sub-components for building structured content layouts. Includes CardHeader, CardTitle, CardDescription, CardContent, and CardFooter.
+
+## Import
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter
+} from "@aurelienbbn/gadget-ui/components";
+```
+
+## Basic Usage
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Card Title</CardTitle>
+    <CardDescription>A brief description of the card content.</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Your main content goes here.</p>
+  </CardContent>
+</Card>
+```
+
+## Sub-Components
+
+### Card
+
+The root container component.
+
+```tsx
+<Card>
+  {/* Card content */}
+</Card>
+```
+
+**Styling**: Rounded corners, surface background, border, and subtle shadow.
+
+### CardHeader
+
+Container for the card's header section.
+
+```tsx
+<CardHeader>
+  <CardTitle>Title</CardTitle>
+  <CardDescription>Description</CardDescription>
+</CardHeader>
+```
+
+**Styling**: Flex column layout with 4px gap and 16px padding on all sides.
+
+### CardTitle
+
+Heading for the card (renders as `<h3>`).
+
+```tsx
+<CardTitle>Your Title</CardTitle>
+```
+
+**Styling**: 14px (sm) font, semibold weight, foreground color, tight leading.
+
+### CardDescription
+
+Subheading or description text (renders as `<p>`).
+
+```tsx
+<CardDescription>Additional context or description</CardDescription>
+```
+
+**Styling**: 12px (xs) font, muted foreground color.
+
+### CardContent
+
+Main content area of the card.
+
+```tsx
+<CardContent>
+  {/* Your content */}
+</CardContent>
+```
+
+**Styling**: Horizontal padding of 16px (4), bottom padding of 16px (4).
+
+### CardFooter
+
+Footer section for actions or additional information.
+
+```tsx
+<CardFooter>
+  <Button>Action</Button>
+</CardFooter>
+```
+
+**Styling**: Flex row layout, items centered, 16px horizontal padding, 16px bottom padding, no top padding.
+
+## Props
+
+All Card sub-components extend their respective HTML element attributes:
+
+<ParamField path="Card.className" type="string">
+  Additional CSS classes for the Card container.
+</ParamField>
+
+<ParamField path="CardHeader.className" type="string">
+  Additional CSS classes for CardHeader.
+</ParamField>
+
+<ParamField path="CardTitle.className" type="string">
+  Additional CSS classes for CardTitle.
+</ParamField>
+
+<ParamField path="CardDescription.className" type="string">
+  Additional CSS classes for CardDescription.
+</ParamField>
+
+<ParamField path="CardContent.className" type="string">
+  Additional CSS classes for CardContent.
+</ParamField>
+
+<ParamField path="CardFooter.className" type="string">
+  Additional CSS classes for CardFooter.
+</ParamField>
+
+## Examples
+
+### Complete Card
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Feature Name</CardTitle>
+    <CardDescription>
+      This feature helps you accomplish important tasks.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Detailed information about the feature.</p>
+  </CardContent>
+  <CardFooter>
+    <Button variant="primary">Learn More</Button>
+    <Button variant="ghost">Dismiss</Button>
+  </CardFooter>
+</Card>
+```
+
+### Simple Card
+
+```tsx
+<Card>
+  <CardContent>
+    <p>Just some content without header or footer.</p>
+  </CardContent>
+</Card>
+```
+
+### Custom Styling
+
+```tsx
+<Card className="max-w-md">
+  <CardHeader className="bg-accent-muted/10">
+    <CardTitle className="text-accent">Highlighted</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p>Content with custom header styling.</p>
+  </CardContent>
+</Card>
+```
+
+## Component Definition
+
+Location: `packages/gadget-ui/src/components/card.tsx`
+
+All Card sub-components use `forwardRef` to support ref forwarding to their underlying HTML elements.

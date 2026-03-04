@@ -1,0 +1,83 @@
+---
+title: action-no-enqueue-max-concurrency-exceeded
+description: Disallow maxConcurrency values exceeding Gadget's hard limit of 100 in api.enqueue queue options.
+---
+
+This rule prevents setting `maxConcurrency` values that exceed Gadget's hard limit of 100 in `api.enqueue` calls. Gadget will reject enqueue calls with `maxConcurrency` above 100 at runtime.
+
+## Rule Details
+
+This rule checks `api.enqueue` calls for the `queue.maxConcurrency` option and reports an error if the value exceeds 100.
+
+**Severity:** Error
+
+**Auto-fixable:** No
+
+## Examples
+
+### Incorrect
+
+```typescript
+// maxConcurrency exceeds limit
+api.enqueue(api.publish, {}, {
+  queue: { name: "q", maxConcurrency: 101 }
+});
+
+// Far exceeds limit
+api.enqueue(api.publish, {}, {
+  queue: { name: "q", maxConcurrency: 500 }
+});
+
+// Double the limit
+api.enqueue(api.publish, {}, {
+  queue: { name: "q", maxConcurrency: 200 }
+});
+```
+
+### Correct
+
+```typescript
+// At the boundary (100)
+api.enqueue(api.publish, {}, {
+  queue: { name: "q", maxConcurrency: 100 }
+});
+
+// Well under the limit
+api.enqueue(api.publish, {}, {
+  queue: { name: "q", maxConcurrency: 1 }
+});
+
+// Reasonable concurrency
+api.enqueue(api.publish, {}, {
+  queue: { name: "q", maxConcurrency: 50 }
+});
+
+// No queue option
+api.enqueue(api.publish, {}, {});
+
+// String form queue (no maxConcurrency)
+api.enqueue(api.publish, {}, {
+  queue: "my-queue"
+});
+
+// Zero is valid
+api.enqueue(api.publish, {}, {
+  queue: { name: "q", maxConcurrency: 0 }
+});
+```
+
+<Note>
+This rule applies to all files, not just action files, since `api.enqueue` can be called from anywhere in your codebase.
+</Note>
+
+## Why This Matters
+
+Gadget enforces a hard limit of 100 concurrent jobs per queue. Setting `maxConcurrency` above this limit will cause Gadget to reject the enqueue call at runtime with an error.
+
+<Warning>
+Gadget will reject enqueue calls with `maxConcurrency` above 100. This rule catches the problem at development time before it causes runtime failures.
+</Warning>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents runtime errors by validating queue configuration at development time.

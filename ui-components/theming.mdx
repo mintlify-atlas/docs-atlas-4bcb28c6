@@ -1,0 +1,332 @@
+---
+title: Theming
+description: Design tokens, color system, typography, and dark/light theme switching in gadget-ui
+---
+
+The gadget-ui design system is built on CSS custom properties that define a semantic color palette, typography, shadows, and border radius. Themes are switched by changing the `data-theme` attribute on the root element.
+
+## Color system
+
+All colors are defined as CSS custom properties in `globals.css`. The Tailwind preset maps Tailwind class names to these properties.
+
+### Accent colors
+
+The primary brand color is electric blue (`#4242fc`), inspired by Gadget's visual identity.
+
+| Token                | CSS Variable          | Dark Value  | Light Value | Usage                          |
+| -------------------- | --------------------- | ----------- | ----------- | ------------------------------ |
+| `accent`             | `--accent`            | `#4242fc`   | `#4242fc`   | Primary actions, links         |
+| `accent-deep`        | `--accent-deep`       | `#2828a0`   | `#2828a0`   | Gradient stops, hover states   |
+| `accent-foreground`  | `--accent-foreground` | `#ffffff`   | `#ffffff`   | Text on accent backgrounds     |
+| `accent-muted`       | `--accent-muted`      | `#3d3580`   | `#ececff`   | Subtle accent backgrounds      |
+
+**Tailwind classes:**
+
+```tsx
+<div className="bg-accent text-accent-foreground">Primary button</div>
+<div className="border border-accent-muted">Subtle accent border</div>
+```
+
+### Surface colors
+
+Layered backgrounds for cards, modals, and overlays.
+
+| Token             | CSS Variable        | Dark Value  | Light Value | Usage                             |
+| ----------------- | ------------------- | ----------- | ----------- | --------------------------------- |
+| `background`      | `--background`      | `#0a0a0f`   | `#f8f8f9`   | Page background                   |
+| `surface`         | `--surface`         | `#111118`   | `#ffffff`   | Card backgrounds                  |
+| `surface-raised`  | `--surface-raised`  | `#17171f`   | `#f6f6f6`   | Elevated cards, buttons           |
+| `surface-overlay` | `--surface-overlay` | `#1e1e28`   | `#eee`      | Modals, dropdowns, popovers       |
+
+**Tailwind classes:**
+
+```tsx
+<div className="bg-background">
+  <div className="bg-surface rounded shadow-card">
+    <button className="bg-surface-raised">Elevated</button>
+  </div>
+</div>
+```
+
+### Text colors
+
+Semantic foreground colors for readability hierarchy.
+
+| Token                | CSS Variable           | Dark Value  | Light Value | Usage                           |
+| -------------------- | ---------------------- | ----------- | ----------- | ------------------------------- |
+| `foreground`         | `--foreground`         | `#f2f2f5`   | `#1f1f1f`   | Primary text                    |
+| `muted-foreground`   | `--muted-foreground`   | `#8888a0`   | `#545454`   | Secondary text, labels          |
+| `subtle-foreground`  | `--subtle-foreground`  | `#55556a`   | `#757575`   | Placeholder text, hints         |
+
+**Tailwind classes:**
+
+```tsx
+<h1 className="text-foreground">Title</h1>
+<p className="text-muted-foreground">Description</p>
+<span className="text-subtle-foreground">Hint</span>
+```
+
+### Border colors
+
+| Token           | CSS Variable      | Dark Value  | Light Value | Usage                       |
+| --------------- | ----------------- | ----------- | ----------- | --------------------------- |
+| `border`        | `--border`        | `#2a2a38`   | `#e2e2e2`   | Standard borders            |
+| `border-subtle` | `--border-subtle` | `#1e1e28`   | `#eee`      | Subtle dividers, outlines   |
+
+**Tailwind classes:**
+
+```tsx
+<div className="border border-border">Standard border</div>
+<div className="border border-border-subtle">Subtle border</div>
+```
+
+### Semantic colors
+
+Status indicators for success, error, warning states.
+
+| Token                | CSS Variable           | Dark Value  | Light Value | Usage                        |
+| -------------------- | ---------------------- | ----------- | ----------- | ---------------------------- |
+| `success`            | `--success`            | `#22c55e`   | `#16a34a`   | Success messages, badges     |
+| `success-muted`      | `--success-muted`      | `#14532d`   | `#dcfce7`   | Success backgrounds          |
+| `destructive`        | `--destructive`        | `#ef4444`   | `#dc2626`   | Error messages, delete buttons|
+| `destructive-muted`  | `--destructive-muted`  | `#450a0a`   | `#fee2e2`   | Error backgrounds            |
+| `warning`            | `--warning`            | `#f59e0b`   | `#d97706`   | Warning messages, badges     |
+| `warning-muted`      | `--warning-muted`      | `#451a03`   | `#fef3c7`   | Warning backgrounds          |
+| `info`               | `--info`               | `#4242fc`   | `#4242fc`   | Info messages, tips          |
+
+**Tailwind classes:**
+
+```tsx
+<Badge variant="success">Success</Badge>
+<Badge variant="destructive">Error</Badge>
+<Badge variant="warning">Warning</Badge>
+<div className="bg-success-muted text-success">Success alert</div>
+```
+
+## Typography
+
+Two font families are included: Inter for UI text and Inconsolata for code.
+
+### Font families
+
+| Token       | CSS Variable  | Stack                                                        | Usage              |
+| ----------- | ------------- | ------------------------------------------------------------ | ------------------ |
+| `font-sans` | `--font-sans` | "Inter Variable", "Inter", Helvetica, Arial, sans-serif     | UI text, headings  |
+| `font-mono` | `--font-mono` | "Inconsolata", Menlo, Monaco, Consolas, monospace           | Code blocks, inline code |
+
+**Tailwind classes:**
+
+```tsx
+<h1 className="font-sans">Heading</h1>
+<code className="font-mono">const foo = "bar";</code>
+```
+
+### Font loading
+
+Fonts are loaded via @fontsource when you import global styles:
+
+```css
+@import "@fontsource-variable/inter";          /* Variable font */
+@import "@fontsource/inconsolata/400.css";     /* Regular */
+@import "@fontsource/inconsolata/700.css";     /* Bold */
+```
+
+This ensures fonts are self-hosted and available offline.
+
+## Border radius
+
+Rounded corners use a 6px base with three modifiers.
+
+| Token         | CSS Variable    | Value   | Usage                        |
+| ------------- | --------------- | ------- | ---------------------------- |
+| `radius`      | `--radius`      | `6px`   | Default rounded corners      |
+| `radius-sm`   | `--radius-sm`   | `4px`   | Subtle rounding (badges)     |
+| `radius-lg`   | `--radius-lg`   | `10px`  | Prominent rounding (cards)   |
+| `radius-full` | `--radius-full` | `9999px`| Fully rounded (pills)        |
+
+**Tailwind classes:**
+
+```tsx
+<div className="rounded">6px radius</div>
+<div className="rounded-sm">4px radius</div>
+<div className="rounded-lg">10px radius</div>
+<div className="rounded-full">Pill shape</div>
+```
+
+## Shadows
+
+Neo-skeuomorphic shadows with inset highlights and ambient shadows.
+
+| Token               | CSS Variable          | Usage                              |
+| ------------------- | --------------------- | ---------------------------------- |
+| `shadow-button`     | `--shadow-button`     | Standard button depth              |
+| `shadow-button-accent` | `--shadow-button-accent` | Accent button with glow       |
+| `shadow-card`       | `--shadow-card`       | Card elevation                     |
+| `shadow-raised`     | `--shadow-raised`     | Modal, dropdown elevation          |
+
+**Example values (dark theme):**
+
+```css
+--shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.4);
+--shadow-button-accent: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 8px rgba(124, 111, 255, 0.35);
+--shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+--shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+```
+
+**Tailwind classes:**
+
+```tsx
+<button className="shadow-button">Button</button>
+<button className="shadow-button-accent bg-accent">Accent button</button>
+<div className="shadow-card">Card</div>
+<div className="shadow-raised">Modal</div>
+```
+
+## Theme switching
+
+Toggle between dark and light modes by setting the `data-theme` attribute on the root element (or any parent container).
+
+### Default theme
+
+Dark mode is the default. No attribute is required:
+
+```html
+<html>
+  <!-- Dark theme active by default -->
+</html>
+```
+
+### Switching themes
+
+Set `data-theme="light"` to activate light mode:
+
+```html
+<html data-theme="light">
+  <!-- Light theme active -->
+</html>
+```
+
+### React example
+
+Manage theme state and apply to a container:
+
+```tsx ThemeToggle.tsx
+import { useState } from "react";
+import { Button } from "@aurelienbbn/gadget-ui/components";
+
+export function ThemeToggle() {
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  return (
+    <div data-theme={theme}>
+      <Button onClick={toggleTheme}>
+        Switch to {theme === "dark" ? "light" : "dark"} mode
+      </Button>
+    </div>
+  );
+}
+```
+
+### Persist theme preference
+
+Store the theme in localStorage:
+
+```tsx useTheme.ts
+import { useEffect, useState } from "react";
+
+export function useTheme() {
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("theme") as "dark" | "light") || "dark";
+    }
+    return "dark";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  return { theme, setTheme };
+}
+```
+
+Use in your app:
+
+```tsx App.tsx
+import { useTheme } from "./useTheme";
+import { Button } from "@aurelienbbn/gadget-ui/components";
+
+export default function App() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div>
+      <Button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+        Toggle theme
+      </Button>
+    </div>
+  );
+}
+```
+
+## Customizing tokens
+
+Override CSS variables to customize the design system:
+
+```css custom.css
+:root {
+  --accent: #ff6b6b;        /* Change accent to red */
+  --radius: 12px;           /* Increase default radius */
+}
+
+[data-theme="dark"] {
+  --background: #000000;    /* Pure black background */
+  --surface: #0f0f0f;       /* Darker surface */
+}
+```
+
+Import your custom CSS after the gadget-ui styles:
+
+```css globals.css
+@import "@aurelienbbn/gadget-ui/styles";
+@import "./custom.css";
+```
+
+This lets you tweak specific tokens without forking the package.
+
+## Component variants
+
+Many components use design tokens via `class-variance-authority`. For example, the Button component:
+
+```tsx Button component (excerpt)
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-1.5 font-medium font-sans rounded",
+  {
+    variants: {
+      variant: {
+        primary: "bg-gradient-to-br from-accent to-accent-deep text-accent-foreground shadow-button-accent",
+        secondary: "bg-surface-raised text-foreground border border-border shadow-button",
+        ghost: "text-muted-foreground border border-transparent hover:bg-surface-raised",
+      },
+    },
+  }
+);
+```
+
+Variants automatically adapt to theme changes because they use CSS custom properties.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Setup" icon="wrench" href="/ui-components/setup">
+    Configure Tailwind and import global styles
+  </Card>
+  <Card title="Components" icon="cube" href="https://github.com/aurelienbobenrieth/gadget/tree/main/packages/gadget-ui#components">
+    Browse available components and variants
+  </Card>
+</CardGroup>

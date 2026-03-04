@@ -1,0 +1,66 @@
+---
+title: action-no-empty-on-success
+description: Disallow empty onSuccess exports in Gadget actions.
+---
+
+This rule disallows empty `onSuccess` exports in Gadget action files. An empty `onSuccess` function serves no purpose and should be removed to keep the code clean.
+
+## Rule Details
+
+This rule checks for `onSuccess` exports that have an empty function body (no statements) and reports them as unnecessary.
+
+**Severity:** Warning
+
+**Auto-fixable:** Yes
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Empty arrow function
+export const onSuccess: ActionOnSuccess = async () => {};
+
+// Block with only a comment
+export const onSuccess: ActionOnSuccess = async () => {
+  // nothing here
+};
+
+// Empty function expression
+export const onSuccess = async function() {};
+```
+
+### Correct
+
+```typescript
+// onSuccess with actual work
+export const onSuccess: ActionOnSuccess = async ({ record }) => {
+  await doSomething(record);
+};
+
+// No onSuccess export
+export const run: ActionRun = async ({ params }) => {
+  // do work
+};
+```
+
+## Auto-fixes
+
+The rule automatically removes the entire empty `onSuccess` export:
+
+```typescript
+// Before
+export const run: ActionRun = async () => {};
+export const onSuccess: ActionOnSuccess = async () => {};
+
+// After auto-fix
+export const run: ActionRun = async () => {};
+```
+
+<Note>
+Gadget does not require an `onSuccess` export. If you have no post-processing work to do, simply omit the export entirely.
+</Note>
+
+## When to Use
+
+This rule is included in the `recommended` config. It helps keep action files clean by removing unnecessary boilerplate.

@@ -1,0 +1,68 @@
+---
+title: action-no-invalid-timeout-ms
+description: Enforce that timeoutMS in Gadget action options does not exceed 900000ms (15 minutes).
+---
+
+This rule enforces that the `timeoutMS` property in Gadget action options does not exceed the maximum allowed value of 900000ms (15 minutes). Gadget enforces this limit at runtime, so exceeding it will cause the action to fail.
+
+## Rule Details
+
+This rule checks the `timeoutMS` property in the `options` export and reports an error if the value exceeds 900000 (15 minutes). The rule only validates literal number values.
+
+**Severity:** Error
+
+**Auto-fixable:** Yes
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Exceeds maximum
+export const options: ActionOptions = { timeoutMS: 950000 };
+
+// Double the maximum
+export const options: ActionOptions = { timeoutMS: 1800000 };
+
+// One millisecond above maximum
+export const options: ActionOptions = { timeoutMS: 900001 };
+```
+
+### Correct
+
+```typescript
+// Value within limit
+export const options: ActionOptions = { timeoutMS: 50000 };
+
+// Value at exact maximum
+export const options: ActionOptions = { timeoutMS: 900000 };
+
+// Zero is valid
+export const options: ActionOptions = { timeoutMS: 0 };
+
+// Very short timeout
+export const options: ActionOptions = { timeoutMS: 1 };
+
+// No timeoutMS property
+export const options: ActionOptions = { returnType: true };
+```
+
+## Auto-fixes
+
+The rule automatically clamps values that exceed the maximum to 900000:
+
+```typescript
+// Before
+export const options: ActionOptions = { timeoutMS: 950000 };
+
+// After auto-fix
+export const options: ActionOptions = { timeoutMS: 900000 };
+```
+
+<Note>
+String values for `timeoutMS` are ignored by this rule, as they will be caught by the `action-no-invalid-options` rule.
+</Note>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents runtime errors by ensuring timeout values are within Gadget's limits.

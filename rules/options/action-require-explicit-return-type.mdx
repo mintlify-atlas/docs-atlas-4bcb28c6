@@ -1,0 +1,100 @@
+---
+title: action-require-explicit-return-type
+description: Require returnType to be explicitly set in the options export of Gadget actions.
+---
+
+This rule requires that the `returnType` property is explicitly set in the action options export. The implicit default for `returnType` differs between model actions (defaults to `false`) and global actions (defaults to `true`), which can lead to confusion. Requiring an explicit value makes the behavior clear.
+
+## Rule Details
+
+This rule reports an error when the `options` export does not include a `returnType` property. The auto-fixer adds the appropriate default based on the action type:
+
+- Model actions: adds `returnType: false`
+- Global actions: adds `returnType: true`
+
+**Severity:** Warning
+
+**Auto-fixable:** Yes
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Model action missing returnType
+export const options: ActionOptions = {
+  actionType: "create"
+};
+
+// Global action missing returnType
+export const options: ActionOptions = {
+  actionType: "custom"
+};
+
+// Other options but no returnType
+export const options: ActionOptions = {
+  timeoutMS: 50000
+};
+
+// Empty options object
+export const options: ActionOptions = {};
+```
+
+### Correct
+
+```typescript
+// Model action with explicit returnType
+export const options: ActionOptions = {
+  actionType: "create",
+  returnType: false
+};
+
+// Global action with explicit returnType
+export const options: ActionOptions = {
+  actionType: "custom",
+  returnType: true
+};
+
+// Can be set to either value
+export const options: ActionOptions = {
+  returnType: true
+};
+```
+
+## Auto-fixes
+
+The rule automatically adds the `returnType` property with the appropriate default:
+
+```typescript
+// Before (model action)
+export const options: ActionOptions = {
+  actionType: "create"
+};
+
+// After auto-fix
+export const options: ActionOptions = {
+  actionType: "create",
+  returnType: false,
+};
+```
+
+```typescript
+// Before (global action)
+export const options: ActionOptions = {
+  timeoutMS: 50000
+};
+
+// After auto-fix
+export const options: ActionOptions = {
+  timeoutMS: 50000,
+  returnType: true,
+};
+```
+
+<Note>
+The rule works even without the `ActionOptions` type annotation, as it detects action files based on their path.
+</Note>
+
+## When to Use
+
+This rule is included in the `strict` config. It helps prevent confusion about the implicit default behavior by requiring explicit configuration.

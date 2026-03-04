@@ -1,0 +1,114 @@
+---
+title: action-no-invalid-options
+description: Enforce that the Gadget action options export contains only valid JSON-serializable literals.
+---
+
+This rule enforces that the `options` export in Gadget action files contains only valid JSON-serializable literal values. The options object is serialized and stored by Gadget, so it cannot contain computed expressions, variables, or other non-JSON values.
+
+## Rule Details
+
+This rule reports errors when the options export contains:
+
+- Computed property keys
+- Shorthand properties
+- Variable references or expressions
+- Template literals (even static ones)
+- Numeric separators
+- Spread operators
+- Any non-literal values
+
+The rule validates nested objects and arrays recursively to ensure all values are JSON-serializable.
+
+**Severity:** Error
+
+**Auto-fixable:** Yes (for some violations)
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Numeric separator
+export const options: ActionOptions = { timeoutMS: 90_000 };
+
+// Binary expression
+export const options: ActionOptions = { timeoutMS: 90 * 1000 };
+
+// Variable reference
+const TIMEOUT = 50000;
+export const options: ActionOptions = { timeoutMS: TIMEOUT };
+
+// Computed key
+export const options: ActionOptions = { [dynamicKey]: true };
+
+// Shorthand property
+const returnType = true;
+export const options: ActionOptions = { returnType };
+
+// Template literal
+export const options: ActionOptions = { select: `all` };
+
+// Spread element
+export const options: ActionOptions = { ...defaults };
+
+// Nested invalid values
+export const options: ActionOptions = {
+  nested: { invalid: VARIABLE }
+};
+```
+
+### Correct
+
+```typescript
+// Plain literal values
+export const options: ActionOptions = {
+  returnType: true,
+  timeoutMS: 50000
+};
+
+// String and boolean values
+export const options: ActionOptions = {
+  returnType: false,
+  type: "custom"
+};
+
+// Nested object with literal values
+export const options: ActionOptions = {
+  triggers: { api: true, scheduler: false }
+};
+
+// Array of literals
+export const options: ActionOptions = {
+  tags: ["a", "b", "c"]
+};
+
+// Null is valid
+export const options: ActionOptions = {
+  key: null
+};
+
+// Deeply nested literal values
+export const options: ActionOptions = {
+  nested: {
+    deep: {
+      value: true
+    }
+  }
+};
+```
+
+## Auto-fixes
+
+The rule can automatically fix:
+
+- Numeric separators - removes underscores
+- Static binary expressions - evaluates to the computed value
+- Static template literals - converts to string literals
+
+<Warning>
+Variable references, computed keys, and shorthand properties cannot be auto-fixed and must be corrected manually.
+</Warning>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. The options export must be valid JSON for Gadget to parse and store it correctly.

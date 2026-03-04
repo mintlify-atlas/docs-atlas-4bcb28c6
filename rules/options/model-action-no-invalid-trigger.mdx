@@ -1,0 +1,85 @@
+---
+title: model-action-no-invalid-trigger
+description: Disallow scheduler triggers in model action options.
+---
+
+This rule disallows scheduler triggers in model action options. Model actions do not support scheduler triggers - scheduler functionality should be moved to a global action instead.
+
+## Rule Details
+
+This rule checks the `triggers` array in model action options and reports an error if any trigger has `type: "scheduler"`. Model actions can only be triggered by API calls or model lifecycle events.
+
+**Severity:** Error
+
+**Auto-fixable:** Yes
+
+## Examples
+
+### Incorrect
+
+```typescript
+// Scheduler trigger in model action
+export const options: ActionOptions = {
+  triggers: [{ type: "scheduler" }],
+};
+
+// Mixed triggers including scheduler
+export const options: ActionOptions = {
+  triggers: [
+    { type: "api" },
+    { type: "scheduler" }
+  ],
+};
+```
+
+### Correct
+
+```typescript
+// Non-scheduler triggers are valid
+export const options: ActionOptions = {
+  triggers: [{ type: "api" }],
+};
+
+// No triggers property
+export const options: ActionOptions = {
+  returnType: true
+};
+```
+
+## Auto-fixes
+
+The rule automatically removes scheduler triggers:
+
+```typescript
+// Before - scheduler is the only trigger
+export const options: ActionOptions = {
+  triggers: [{ type: "scheduler" }],
+};
+
+// After auto-fix - entire triggers property is removed
+export const options: ActionOptions = {
+};
+```
+
+```typescript
+// Before - mixed triggers
+export const options: ActionOptions = {
+  triggers: [
+    { type: "api" },
+    { type: "scheduler" }
+  ],
+};
+
+// After auto-fix - scheduler element is removed
+export const options: ActionOptions = {
+  triggers: [{ type: "api" }],
+};
+```
+
+<Warning>
+If you need scheduler functionality, move the action to `api/actions/` as a global action where scheduler triggers are supported.
+</Warning>
+
+## When to Use
+
+This rule is included in the `recommended` config and should always be enabled for Gadget projects. It prevents configuration errors by catching invalid triggers at development time.

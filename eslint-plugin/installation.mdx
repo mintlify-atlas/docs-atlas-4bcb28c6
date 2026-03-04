@@ -1,0 +1,144 @@
+---
+title: Installation
+description: Install eslint-plugin-gadget with npm, pnpm, or yarn and set up your first config
+---
+
+The ESLint plugin requires ESLint v9+ (flat config) and Node 18+. It includes peer dependencies for TypeScript ESLint utilities.
+
+## Install with package managers
+
+<Tabs>
+  <Tab title="pnpm">
+    ```bash
+    pnpm add -D @aurelienbbn/eslint-plugin-gadget eslint @typescript-eslint/utils
+    ```
+  </Tab>
+  <Tab title="npm">
+    ```bash
+    npm install --save-dev @aurelienbbn/eslint-plugin-gadget eslint @typescript-eslint/utils
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add -D @aurelienbbn/eslint-plugin-gadget eslint @typescript-eslint/utils
+    ```
+  </Tab>
+</Tabs>
+
+## Peer dependencies
+
+The plugin requires the following peer dependencies:
+
+| Package                   | Version    | Purpose                                |
+| ------------------------- | ---------- | -------------------------------------- |
+| `eslint`                  | `>=9.0.0`  | ESLint flat config support             |
+| `@typescript-eslint/utils`| `>=8.0.0`  | TypeScript AST utilities for rule logic|
+
+<Note>
+  The plugin works with both JavaScript and TypeScript Gadget action files. You do not need to install @typescript-eslint/parser unless you are using other TypeScript-specific ESLint rules.
+</Note>
+
+## Verify installation
+
+Check that the plugin is available:
+
+```bash
+node -e "console.log(require('@aurelienbbn/eslint-plugin-gadget').meta)"
+```
+
+Expected output:
+
+```json
+{
+  "name": "eslint-plugin-gadget",
+  "version": "0.0.1"
+}
+```
+
+## Minimal config
+
+Create `eslint.config.js` in your project root:
+
+```js eslint.config.js
+import gadget from "@aurelienbbn/eslint-plugin-gadget";
+
+export default [gadget.configs.recommended];
+```
+
+This enables all 16 rules with recommended severity levels (mix of `error` and `warn`).
+
+## Run ESLint
+
+Lint your Gadget action files:
+
+```bash
+npx eslint "api/actions/**/*.{js,ts}" "api/models/**/actions/**/*.{js,ts}"
+```
+
+The plugin only activates rules on files matching Gadget action patterns:
+
+- `**/api/actions/**/*.{js,ts}` (global actions)
+- `**/api/models/**/actions/**/*.{js,ts}` (model actions)
+
+<Tip>
+  The two enqueue rules (`action-no-enqueue-max-concurrency-exceeded` and `action-no-implicit-enqueue-retries`) apply to all files since `api.enqueue()` can be called anywhere.
+</Tip>
+
+## Auto-fix issues
+
+Many rules support auto-fixing:
+
+```bash
+npx eslint --fix "api/actions/**/*.{js,ts}"
+```
+
+Fixable rules include:
+
+- `action-no-invalid-options` - removes numeric separators, converts template literals to strings
+- `action-no-invalid-timeout-ms` - clamps timeout to 900000ms
+- `action-require-timeout-ms-comment` - adds trailing `// N minutes` comment
+- `action-no-empty-on-success` - removes empty `onSuccess` exports
+- `action-require-action-run-type` - adds `ActionRun` type annotations
+
+See [Configuration](/eslint-plugin/configuration) for advanced setup options.
+
+## Local development
+
+If you are contributing to the plugin or testing unreleased changes, you can link it locally.
+
+### Using pnpm link
+
+```bash
+# In the monorepo
+pnpm run build
+cd packages/eslint-plugin-gadget
+pnpm link --global
+
+# In your project
+pnpm link --global @aurelienbbn/eslint-plugin-gadget
+```
+
+Re-run `pnpm run build` after making changes.
+
+### Using pnpm pack
+
+```bash
+# In the monorepo
+pnpm run build
+cd packages/eslint-plugin-gadget
+pnpm pack
+
+# In your project
+pnpm add -D ./path/to/aurelienbbn-eslint-plugin-gadget-0.0.1.tgz
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/eslint-plugin/configuration">
+    Learn about file patterns and customizing rules
+  </Card>
+  <Card title="Configs" icon="sliders" href="/eslint-plugin/configs">
+    Compare recommended vs strict presets
+  </Card>
+</CardGroup>
