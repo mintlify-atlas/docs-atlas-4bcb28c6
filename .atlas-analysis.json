@@ -1,0 +1,144 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Gadget Developer Tools",
+  "projectDescription": "ESLint plugin and design system for Gadget action file validation and developer tooling",
+  "theme": "aspen",
+  "primaryColor": "#94cb04",
+  "lightColor": "#545454",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "ESLint Plugin",
+            "pages": [
+              "eslint-plugin/installation",
+              "eslint-plugin/configuration",
+              "eslint-plugin/configs"
+            ]
+          },
+          {
+            "group": "UI Components",
+            "pages": [
+              "ui-components/installation",
+              "ui-components/setup",
+              "ui-components/theming"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Rules",
+        "groups": [
+          {
+            "group": "Options Validation",
+            "pages": [
+              "rules/options/action-no-invalid-options",
+              "rules/options/action-no-invalid-timeout-ms",
+              "rules/options/action-require-timeout-ms-comment",
+              "rules/options/action-require-explicit-return-type",
+              "rules/options/global-action-no-action-type",
+              "rules/options/model-action-invalid-action-type",
+              "rules/options/model-action-no-invalid-trigger",
+              "rules/options/model-action-no-transactional-timeout-mismatch"
+            ]
+          },
+          {
+            "group": "Params Validation",
+            "pages": [
+              "rules/params/action-no-invalid-params"
+            ]
+          },
+          {
+            "group": "Runtime Safety",
+            "pages": [
+              "rules/runtime/action-no-empty-on-success",
+              "rules/runtime/action-no-return-value-in-on-success",
+              "rules/runtime/action-no-await-handle-result-in-action",
+              "rules/runtime/action-require-run-with-on-success",
+              "rules/runtime/action-require-action-run-type"
+            ]
+          },
+          {
+            "group": "Enqueue Safety",
+            "pages": [
+              "rules/enqueue/action-no-enqueue-max-concurrency-exceeded",
+              "rules/enqueue/action-no-implicit-enqueue-retries"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Components",
+            "pages": [
+              "components/button",
+              "components/badge",
+              "components/card",
+              "components/code-block",
+              "components/callout",
+              "components/severity-badge",
+              "components/rule-card",
+              "components/rule-example-tabs"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "components/utilities"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "16 ESLint rules for Gadget action file validation",
+    "Validates options, params, timeout, and runtime issues",
+    "Auto-fixable rules for common issues",
+    "React component library with dark/light theme support",
+    "Tailwind CSS preset with design tokens",
+    "Built with TypeScript for type safety"
+  ],
+  "publicApiSurface": [
+    "gadget.configs.recommended",
+    "gadget.configs.strict",
+    "action-no-invalid-options",
+    "action-no-invalid-timeout-ms",
+    "action-require-timeout-ms-comment",
+    "action-require-explicit-return-type",
+    "global-action-no-action-type",
+    "model-action-invalid-action-type",
+    "model-action-no-invalid-trigger",
+    "model-action-no-transactional-timeout-mismatch",
+    "action-no-invalid-params",
+    "action-no-empty-on-success",
+    "action-no-return-value-in-on-success",
+    "action-no-await-handle-result-in-action",
+    "action-require-run-with-on-success",
+    "action-require-action-run-type",
+    "action-no-enqueue-max-concurrency-exceeded",
+    "action-no-implicit-enqueue-retries",
+    "Button",
+    "Badge",
+    "Card",
+    "CodeBlock",
+    "Callout",
+    "SeverityBadge",
+    "RuleCard",
+    "RuleExampleTabs",
+    "cn()",
+    "gadgetPreset"
+  ]
+}
